@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
+from statsmodels.stats.multitest import multipletests
 import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
@@ -20,11 +21,30 @@ def save_t_test_results(results_df, results_directory):
     results_df.to_csv(csv_filepath, index=False)
 
 
+def apply_multiple_testing_correction(results_df):
+    """
+    Apply both Bonferroni and Benjamini-Hochberg corrections to p-values
+    """
+    # Bonferroni correction
+    results_df['p_value_bonferroni'] = multipletests(
+        results_df['p_value'], 
+        method='bonferroni'
+    )[1]
+    
+    # Benjamini-Hochberg correction
+    results_df['p_value_bh'] = multipletests(
+        results_df['p_value'], 
+        method='fdr_bh'
+    )[1]
+    
+    return results_df
+
+
 def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory):
     
     # Get top-4 and bottom-4 dimensions based on p-values
-    top_4_dims = results_df.nsmallest(4, 'p_value')['dimension'].values
-    bottom_4_dims = results_df.nlargest(4, 'p_value')['dimension'].values
+    top_4_dims = results_df.nsmallest(4, 'p_value_bh')['dimension'].values
+    bottom_4_dims = results_df.nlargest(4, 'p_value_bh')['dimension'].values
 
     # Plot top-4 dimensions
     plt.figure(figsize=(15, 10))
@@ -72,6 +92,9 @@ if __name__ == "__main__":
             results.append({'dimension': dim, 't_statistic': t_statistic, 'p_value': p_value})
 
         results_df = pd.DataFrame(results)
+        
+        # Apply multiple testing correction
+        results_df = apply_multiple_testing_correction(results_df)
 
         results_directory = get_results_directory(embeddings_csv, "t_test_analysis")
 
