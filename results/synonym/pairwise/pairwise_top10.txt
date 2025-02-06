@@ -1,0 +1,51 @@
+Top 10 Most Important Dimensions:
+Dimension 309: 0.8979
+  Mean diff: 0.3442
+  Std diff: 0.2984
+  Median diff: 0.2770
+
+Dimension 181: 0.8943
+  Mean diff: 0.3640
+  Std diff: 0.3729
+  Median diff: 0.2394
+
+Dimension 753: 0.7793
+  Mean diff: 0.3251
+  Std diff: 0.3416
+  Median diff: 0.2145
+
+Dimension 274: 0.4701
+  Mean diff: 0.2305
+  Std diff: 0.2209
+  Median diff: 0.1513
+
+Dimension 110: 0.3389
+  Mean diff: 0.1873
+  Std diff: 0.1726
+  Median diff: 0.1327
+
+Dimension 668: 0.3163
+  Mean diff: 0.1808
+  Std diff: 0.1696
+  Median diff: 0.1288
+
+Dimension 206: 0.2928
+  Mean diff: 0.1668
+  Std diff: 0.1555
+  Median diff: 0.1239
+
+Dimension 143: 0.2749
+  Mean diff: 0.1641
+  Std diff: 0.1430
+  Median diff: 0.1269
+
+Dimension 198: 0.2228
+  Mean diff: 0.1479
+  Std diff: 0.1198
+  Median diff: 0.1222
+
+Dimension 334: 0.2213
+  Mean diff: 0.1496
+  Std diff: 0.1259
+  Median diff: 0.1132
+

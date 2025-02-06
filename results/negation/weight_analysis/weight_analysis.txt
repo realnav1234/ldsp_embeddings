@@ -1,0 +1,79 @@
+Decoder Layer Weight Analysis
+
+Overall Statistics:
+Mean weight magnitude: 0.0981
+Weight standard deviation: 0.1237
+Mean weight sum per dimension: 1.5701
+Max weight sum: 5.3816
+
+Top 10 Most Influenced Dimensions:
+
+Rank 1 - Dimension 181:
+  Sum of absolute weights: 5.3816
+  Mean absolute weight: 0.3363
+  Weight std dev: 0.4167
+  Max absolute weight: 0.8565
+  Bias value: -0.1548
+
+Rank 2 - Dimension 309:
+  Sum of absolute weights: 4.8032
+  Mean absolute weight: 0.3002
+  Weight std dev: 0.3693
+  Max absolute weight: 0.7100
+  Bias value: -0.2705
+
+Rank 3 - Dimension 753:
+  Sum of absolute weights: 4.0987
+  Mean absolute weight: 0.2562
+  Weight std dev: 0.3460
+  Max absolute weight: 0.8058
+  Bias value: 0.1337
+
+Rank 4 - Dimension 110:
+  Sum of absolute weights: 2.6276
+  Mean absolute weight: 0.1642
+  Weight std dev: 0.2047
+  Max absolute weight: 0.4556
+  Bias value: 0.0968
+
+Rank 5 - Dimension 206:
+  Sum of absolute weights: 2.6200
+  Mean absolute weight: 0.1638
+  Weight std dev: 0.1939
+  Max absolute weight: 0.3868
+  Bias value: 0.1373
+
+Rank 6 - Dimension 668:
+  Sum of absolute weights: 2.6058
+  Mean absolute weight: 0.1629
+  Weight std dev: 0.1904
+  Max absolute weight: 0.4019
+  Bias value: 0.0300
+
+Rank 7 - Dimension 274:
+  Sum of absolute weights: 2.5543
+  Mean absolute weight: 0.1596
+  Weight std dev: 0.2297
+  Max absolute weight: 0.5522
+  Bias value: -0.1029
+
+Rank 8 - Dimension 697:
+  Sum of absolute weights: 2.4474
+  Mean absolute weight: 0.1530
+  Weight std dev: 0.1916
+  Max absolute weight: 0.5439
+  Bias value: -0.1819
+
+Rank 9 - Dimension 589:
+  Sum of absolute weights: 2.4404
+  Mean absolute weight: 0.1525
+  Weight std dev: 0.1829
+  Max absolute weight: 0.3788
+  Bias value: -0.0957
+
+Rank 10 - Dimension 593:
+  Sum of absolute weights: 2.4378
+  Mean absolute weight: 0.1524
+  Weight std dev: 0.1720
+  Max absolute weight: 0.2830
+  Bias value: -0.0239

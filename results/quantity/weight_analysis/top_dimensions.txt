@@ -1,0 +1,11 @@
+Top Dimensions by Weight Influence:
+1. Dimension 181: 5.1379
+2. Dimension 309: 5.0223
+3. Dimension 753: 4.6662
+4. Dimension 110: 2.7423
+5. Dimension 195: 2.7398
+6. Dimension 274: 2.7107
+7. Dimension 589: 2.6983
+8. Dimension 76: 2.5953
+9. Dimension 668: 2.5793
+10. Dimension 5: 2.5602

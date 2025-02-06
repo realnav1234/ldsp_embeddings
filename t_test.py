@@ -8,10 +8,17 @@ from tqdm import tqdm
 from utils import *
 
 def perform_t_test(embeddings_df, dim):
+
+    # sentence2_values = []
+
+    # for ix in range(1, len(embeddings_df['Sentence2_embedding'])): 
+    #     sentence2_values.append(embeddings_df['Sentence2_embedding'][ix-1][dim])
+
+    # sentence2_values.append(embeddings_df['Sentence2_embedding'][0][dim])
     
     sentence1_values = [emb[dim] for emb in embeddings_df['Sentence1_embedding']]
     sentence2_values = [emb[dim] for emb in embeddings_df['Sentence2_embedding']]
-    t_statistic, p_value = stats.ttest_ind(sentence1_values, sentence2_values)
+    t_statistic, p_value = stats.ttest_ind(sentence1_values, sentence2_values, equal_var=False)
     return t_statistic, p_value
 
 
