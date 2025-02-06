@@ -1,0 +1,92 @@
+import numpy as np
+import pandas as pd
+import scipy.stats as stats
+from statsmodels.stats.multitest import multipletests
+import matplotlib.pyplot as plt
+import os
+from tqdm import tqdm
+from utils import *
+
+def perform_wilcoxon_test(embeddings_df, dim):
+    
+    sentence1_values = [emb[dim] for emb in embeddings_df['Sentence1_embedding']]
+    sentence2_values = [emb[dim] for emb in embeddings_df['Sentence2_embedding']]
+    
+    try:
+        w_statistic, p_value = stats.wilcoxon(sentence1_values, sentence2_values)
+    except ValueError:
+        w_statistic, p_value = np.nan, np.nan  # Handle cases where Wilcoxon test cannot be computed
+    
+    return w_statistic, p_value
+
+def save_wilcoxon_results(results_df, results_directory):
+    
+    csv_filepath = os.path.join(results_directory, "wilcoxon_results.csv")
+    results_df.to_csv(csv_filepath, index=False)
+
+def apply_multiple_testing_correction(results_df):
+    
+    results_df['p_value_bonferroni'] = multipletests(
+        results_df['p_value'], method='bonferroni'
+    )[1]
+    
+    results_df['p_value_bh'] = multipletests(
+        results_df['p_value'], method='fdr_bh'
+    )[1]
+    
+    return results_df
+
+def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory):
+    
+    top_4_dims = results_df.nsmallest(4, 'p_value_bh')['dimension'].values
+    bottom_4_dims = results_df.nlargest(4, 'p_value_bh')['dimension'].values
+    
+    plt.figure(figsize=(15, 10))
+    for i, dim in enumerate(top_4_dims):
+        plt.subplot(2, 2, i + 1)
+        sentence1_values = [emb[dim] for emb in embeddings_df['Sentence1_embedding']]
+        sentence2_values = [emb[dim] for emb in embeddings_df['Sentence2_embedding']]
+        plt.hist(sentence1_values, alpha=0.5, label='Sentence 1', bins=30)
+        plt.hist(sentence2_values, alpha=0.5, label='Sentence 2', bins=30)
+        plt.xlabel(f'Dimension {dim}')
+        plt.ylabel('Frequency')
+        plt.title(f'Top {i+1}: Dimension {dim}')
+        plt.legend(loc='upper right')
+    plt.tight_layout()
+    plt.savefig(os.path.join(results_directory, "top_4_wilcoxon_p_values.png"))
+    plt.close()
+    
+    plt.figure(figsize=(15, 10))
+    for i, dim in enumerate(bottom_4_dims):
+        plt.subplot(2, 2, i + 1)
+        sentence1_values = [emb[dim] for emb in embeddings_df['Sentence1_embedding']]
+        sentence2_values = [emb[dim] for emb in embeddings_df['Sentence2_embedding']]
+        plt.hist(sentence1_values, alpha=0.5, label='Sentence 1', bins=30)
+        plt.hist(sentence2_values, alpha=0.5, label='Sentence 2', bins=30)
+        plt.xlabel(f'Dimension {dim}')
+        plt.ylabel('Frequency')
+        plt.title(f'Bottom {i+1}: Dimension {dim}')
+        plt.legend(loc='upper right')
+    plt.tight_layout()
+    plt.savefig(os.path.join(results_directory, "bottom_4_wilcoxon_p_values.png"))
+    plt.close()
+
+if __name__ == "__main__":
+    embedding_filepaths = get_embeddings_filepaths()
+    
+    for embeddings_csv in tqdm(embedding_filepaths):
+        embeddings_df = read_embeddings_df(embeddings_csv)
+        
+        results = []
+        for dim in range(len(embeddings_df['Sentence1_embedding'][0])):
+            w_statistic, p_value = perform_wilcoxon_test(embeddings_df, dim)
+            results.append({'dimension': dim, 'w_statistic': w_statistic, 'p_value': p_value})
+        
+        results_df = pd.DataFrame(results)
+        results_df = apply_multiple_testing_correction(results_df)
+        
+        results_directory = get_results_directory(embeddings_csv, "wilcoxon_analysis")
+        save_wilcoxon_results(results_df, results_directory)
+        plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory)
+    
+    print("Wilcoxon test analysis complete.")
