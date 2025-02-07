@@ -6,12 +6,12 @@ from tqdm import tqdm
 from utils import *
 
 
-def create_combined_graph(mutual_info_df, wilcoxon_results_df, clf_weights_df, rfe_results_df, results_directory, N=15):
+def create_combined_graph(mutual_info_df, wilcoxon_results_df, rfe_results_df, results_directory, N=15):
     """
     Create a combined visualization showing mutual information and significant dimensions 
     from different analyses
     """
-    lp = results_directory.split('/')[1]
+    lp = results_directory.split('/')[2]
    
     mutual_informations = mutual_info_df['Mutual_Information'].values
     top_N_wilcoxon = wilcoxon_results_df.nsmallest(N, 'wilcoxon_pvalue_bh')['dimension'].values
@@ -66,28 +66,23 @@ def create_combined_graph(mutual_info_df, wilcoxon_results_df, clf_weights_df, r
 
 
 if __name__ == "__main__":
-    embedding_filepaths = get_embeddings_filepaths()
+    embedding_filepaths = get_embeddings_filepaths(model_name="gpt")
 
     for embeddings_csv in tqdm(embedding_filepaths):
-        results_directory = get_results_directory(embeddings_csv, "combined_analysis")
+        results_directory = get_results_directory(embeddings_csv, "combined_analysis", model_name="gpt")
 
         # Load all the analysis results
         mutual_info_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "mutual_information"), 
+            get_results_directory(embeddings_csv, "mutual_information", model_name="gpt"), 
             "mutual_information_all.csv"))
         
         wilcoxon_results_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "t_test_analysis"), 
+            get_results_directory(embeddings_csv, "t_test_analysis", model_name="gpt"), 
             "wilcoxon_results.csv"))
-        
-        clf_weights_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "logistic_classifier"), 
-            "classifier_weights.csv"))
-        
+
         rfe_results_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "rfe_analysis"), 
+            get_results_directory(embeddings_csv, "rfe_analysis", model_name="gpt"), 
             "rfe_results.csv"))
 
-        create_combined_graph(mutual_info_df, wilcoxon_results_df, 
-                            clf_weights_df, rfe_results_df, results_directory, N=25)
+        create_combined_graph(mutual_info_df, wilcoxon_results_df, rfe_results_df, results_directory, N=25)
 

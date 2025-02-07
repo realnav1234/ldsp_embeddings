@@ -14,10 +14,10 @@ def get_dataset_filepaths():
 
     return csv_filenames 
 
-def get_embeddings_filepaths(model="bert"):
+def get_embeddings_filepaths(model_name="bert"):
 
     excluded = ["gender", "modality", "spatial", "subject"]
-    directory = f"./embeddings/{model}"
+    directory = f"./embeddings/{model_name}"
     return [os.path.join(directory, fn) for fn in os.listdir(directory) if all([e not in fn for e in excluded])]
 
 def get_linguistic_property(embeddings_csv):

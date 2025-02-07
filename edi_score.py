@@ -11,18 +11,18 @@ from skopt import gp_minimize
 from skopt.space import Real
 
 
-def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, clf_weights_df, rfe_results_df, N=20):
+def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=20):
     """
     Calculate EDI (Embedding Dimension Importance) scores incorporating:
     - Mutual Information scores
     - Wilcoxon test p-values (negative log likelihood)
-    - RFE-selected logistic regression weights
+    - RFE feature importance scores
     """
     # Define weights for different analyses
     WEIGHTS = {
         'mutual_info': 0.33,
         'wilcoxon': 0.33,
-        'rfe_logistic': 0.34
+        'rfe': 0.34
     }
     assert abs(sum(WEIGHTS.values()) - 1.0) < 1e-10, "Weights must sum to 1"
 
@@ -30,7 +30,7 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, clf_weights_df, rf
     n_dims = 768
     mi_scores = np.zeros(n_dims)
     wilcoxon_scores = np.zeros(n_dims)
-    rfe_logistic_scores = np.zeros(n_dims)
+    rfe_scores = np.zeros(n_dims)
 
     # Calculate Mutual Information scores
     mi_values = mutual_info_df['Mutual_Information'].values
@@ -42,20 +42,19 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, clf_weights_df, rf
     wilcoxon_scores = -np.log(p_values + epsilon)
     wilcoxon_scores = (wilcoxon_scores - wilcoxon_scores.min()) / (wilcoxon_scores.max() - wilcoxon_scores.min())
 
-    # Calculate RFE-Logistic scores
+    # Calculate RFE scores using importance values
     rfe_dimensions = rfe_results_df['Feature'].values
-    clf_weights = clf_weights_df['Weight'].values
-    # Only use logistic weights for RFE-selected features
-    rfe_logistic_scores[rfe_dimensions] = clf_weights[rfe_dimensions]
-    # Normalize RFE-logistic scores
-    if rfe_logistic_scores.max() != rfe_logistic_scores.min():
-        rfe_logistic_scores = (rfe_logistic_scores - rfe_logistic_scores.min()) / (rfe_logistic_scores.max() - rfe_logistic_scores.min())
+    rfe_importance = rfe_results_df['Importance'].values
+    rfe_scores[rfe_dimensions] = rfe_importance
+    # Normalize RFE scores
+    if rfe_scores.max() != rfe_scores.min():
+        rfe_scores = (rfe_scores - rfe_scores.min()) / (rfe_scores.max() - rfe_scores.min())
 
     # Combine scores using weights
     final_scores = (
         WEIGHTS['mutual_info'] * mi_scores +
         WEIGHTS['wilcoxon'] * wilcoxon_scores +
-        WEIGHTS['rfe_logistic'] * rfe_logistic_scores
+        WEIGHTS['rfe'] * rfe_scores
     )
 
     # Create and sort DataFrame
@@ -64,7 +63,7 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, clf_weights_df, rf
         'edi_score': final_scores,
         'mi_score': mi_scores,
         'wilcoxon_score': wilcoxon_scores,
-        'rfe_logistic_score': rfe_logistic_scores
+        'rfe_score': rfe_scores
     })
     
     scores_df = scores_df.sort_values('edi_score', ascending=False)
@@ -80,31 +79,27 @@ def save_edi_scores(scores_df, results_directory):
 
 
 if __name__ == "__main__":
-    embedding_filepaths = get_embeddings_filepaths()
+    embedding_filepaths = get_embeddings_filepaths(model_name="gpt")
 
     for embeddings_csv in tqdm(embedding_filepaths):
-        results_directory = get_results_directory(embeddings_csv, "edi_scores")
+        results_directory = get_results_directory(embeddings_csv, "edi_scores", model_name="gpt")
         
         # Load analysis results
         mutual_info_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "mutual_information"), 
+            get_results_directory(embeddings_csv, "mutual_information", model_name="gpt"), 
             "mutual_information_all.csv"))
         
         wilcoxon_results_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "t_test_analysis"), 
+            get_results_directory(embeddings_csv, "t_test_analysis", model_name="gpt"), 
             "wilcoxon_results.csv"))
         
-        clf_weights_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "logistic_classifier"), 
-            "classifier_weights.csv"))
-        
         rfe_results_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "rfe_analysis"), 
+            get_results_directory(embeddings_csv, "rfe_analysis", model_name="gpt"), 
             "rfe_results.csv"))
 
         # Calculate and save EDI scores
         edi_scores = calculate_edi_scores(
-            mutual_info_df, wilcoxon_results_df, clf_weights_df, rfe_results_df
+            mutual_info_df, wilcoxon_results_df, rfe_results_df
             )
         
         save_edi_scores(edi_scores, results_directory)

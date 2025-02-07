@@ -76,10 +76,10 @@ def save_rfe_results(selected_features, accuracy, model, results_directory):
 
 if __name__ == "__main__":
 
-    embedding_filepaths = get_embeddings_filepaths()
+    embedding_filepaths = get_embeddings_filepaths(model_name="gpt")
     for embeddings_csv in tqdm(embedding_filepaths): 
         # Get results directory
-        results_directory = get_results_directory(embeddings_csv, "rfe_analysis")
+        results_directory = get_results_directory(embeddings_csv, "rfe_analysis", model_name="gpt")
         
         # Perform RFE
         accuracy, selected_features, model = perform_rfe(read_embeddings_df(embeddings_csv))

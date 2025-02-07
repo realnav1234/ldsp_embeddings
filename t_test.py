@@ -156,11 +156,11 @@ def plot_difference_distributions(t_stats, p_vals, results_directory):
 
 
 if __name__ == "__main__":
-    embedding_filepaths = get_embeddings_filepaths()
+    embedding_filepaths = get_embeddings_filepaths(model_name="gpt")
 
     for embeddings_csv in tqdm(embedding_filepaths):
         embeddings_df = read_embeddings_df(embeddings_csv)
-        results_directory = get_results_directory(embeddings_csv, "t_test_analysis")
+        results_directory = get_results_directory(embeddings_csv, "t_test_analysis", model_name="gpt")
 
         # Run Wilcoxon analysis on differences
         t_stats, p_vals, wilcoxon_df = differences_t_test(embeddings_df)
@@ -168,29 +168,29 @@ if __name__ == "__main__":
         # Apply BH correction to Wilcoxon results
         wilcoxon_df['wilcoxon_pvalue_bh'] = multipletests(wilcoxon_df['wilcoxon_pvalue'], method='fdr_bh')[1]
         
-        # Run independent t-tests between groups
-        independent_t_results = []
-        for dim in range(768):
-            t_stat, p_val = perform_t_test(embeddings_df, dim)
-            independent_t_results.append({
-                'dimension': dim,
-                't_statistic': t_stat,
-                't_pvalue': p_val
-            })
+        # # Run independent t-tests between groups
+        # independent_t_results = []
+        # for dim in range(768):
+        #     t_stat, p_val = perform_t_test(embeddings_df, dim)
+        #     independent_t_results.append({
+        #         'dimension': dim,
+        #         't_statistic': t_stat,
+        #         't_pvalue': p_val
+        #     })
         
-        # Create independent t-test DataFrame and apply correction
-        t_test_df = pd.DataFrame(independent_t_results)
-        t_test_df['t_pvalue_bh'] = multipletests(t_test_df['t_pvalue'], method='fdr_bh')[1]
+        # # Create independent t-test DataFrame and apply correction
+        # t_test_df = pd.DataFrame(independent_t_results)
+        # t_test_df['t_pvalue_bh'] = multipletests(t_test_df['t_pvalue'], method='fdr_bh')[1]
         
         # Save both results
         wilcoxon_df.to_csv(os.path.join(results_directory, "wilcoxon_results.csv"), index=False)
-        t_test_df.to_csv(os.path.join(results_directory, "t_test_results.csv"), index=False)
+        # t_test_df.to_csv(os.path.join(results_directory, "t_test_results.csv"), index=False)
         
         # Generate and save plots
         plot_difference_distributions(t_stats, p_vals, results_directory)
         
         # Plot distributions for both test types
-        plot_top_and_bottom_p_values(t_test_df, embeddings_df, results_directory, test_type='t_test')
+        # plot_top_and_bottom_p_values(t_test_df, embeddings_df, results_directory, test_type='t_test')
         plot_top_and_bottom_p_values(wilcoxon_df, embeddings_df, results_directory, test_type='wilcoxon')
 
     print("\nT-test analysis complete.")

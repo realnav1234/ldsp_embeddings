@@ -70,13 +70,13 @@ def save_plot(top_10_dimensions, top_10_mutual_informations, results_directory):
     plt.close()
 
 if __name__ == "__main__":
-    embeddings_filepaths = get_embeddings_filepaths()
+    embeddings_filepaths = get_embeddings_filepaths(model_name="gpt")
 
     for embeddings_csv in tqdm(embeddings_filepaths):
         embeddings_df = read_embeddings_df(embeddings_csv)
 
         mutual_informations, top_10_dimensions, top_10_mutual_informations = process_mutual_information(embeddings_df)
-        results_directory = get_results_directory(embeddings_csv, "mutual_information")
+        results_directory = get_results_directory(embeddings_csv, "mutual_information", model_name="gpt")
 
         save_results(mutual_informations, top_10_dimensions, top_10_mutual_informations, results_directory)
         save_plot(top_10_dimensions, top_10_mutual_informations, results_directory)
