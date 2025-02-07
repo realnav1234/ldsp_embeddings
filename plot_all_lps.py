@@ -6,20 +6,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Patch
 
+from constants import MODEL
 
 def create_edi_comparison_table(embedding_dim):
     # Define the linguistic properties and their file paths
     properties = {
-        'Control': 'results/gpt/control/edi_scores/edi_score.csv',
-        'Negation': 'results/gpt/negation/edi_scores/edi_score.csv',
-        'Intensifier': 'results/gpt/intensifier/edi_scores/edi_score.csv',
-        'Tense': 'results/gpt/tense/edi_scores/edi_score.csv',
-        'Voice': 'results/gpt/voice/edi_scores/edi_score.csv',
-        'Polarity': 'results/gpt/polarity/edi_scores/edi_score.csv',
-        'Quantity': 'results/gpt/quantity/edi_scores/edi_score.csv',
-        'Factuality': 'results/gpt/factuality/edi_scores/edi_score.csv',
-        'Definiteness': 'results/gpt/definiteness/edi_scores/edi_score.csv',
-        'Synonym': 'results/gpt/synonym/edi_scores/edi_score.csv'
+        'Control': f'results/{MODEL}/control/edi_scores/edi_score.csv',
+        'Negation': f'results/{MODEL}/negation/edi_scores/edi_score.csv',
+        'Intensifier': f'results/{MODEL}/intensifier/edi_scores/edi_score.csv',
+        'Tense': f'results/{MODEL}/tense/edi_scores/edi_score.csv',
+        'Voice': f'results/{MODEL}/voice/edi_scores/edi_score.csv',
+        'Polarity': f'results/{MODEL}/polarity/edi_scores/edi_score.csv',
+        'Quantity': f'results/{MODEL}/quantity/edi_scores/edi_score.csv',
+        'Factuality': f'results/{MODEL}/factuality/edi_scores/edi_score.csv',
+        'Definiteness': f'results/{MODEL}/definiteness/edi_scores/edi_score.csv',
+        'Synonym': f'results/{MODEL}/synonym/edi_scores/edi_score.csv'
     }
     
     # Initialize an empty DataFrame to store all scores
@@ -38,7 +39,7 @@ def create_edi_comparison_table(embedding_dim):
     all_scores.columns = [f'Dim_{i}' for i in range(len(all_scores.columns))]
     
     # Save to CSV
-    output_path = 'results/gpt/combined_edi_scores.csv'
+    output_path = f'results/{MODEL}/combined_edi_scores.csv'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     all_scores.to_csv(output_path)
     
@@ -62,7 +63,7 @@ def create_highlighted_heatmap(df):
     plt.xlabel('Dimensions (0-767)')
     plt.tight_layout()
     
-    plt.savefig('results/gpt/edi_scores_heatmap.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'results/{MODEL}/edi_scores_heatmap.png', dpi=300, bbox_inches='tight')
     plt.close()
 
 
@@ -118,7 +119,7 @@ def create_colored_top_values(df, threshold=0.5):
     
     # Adjust layout and save
     plt.tight_layout()
-    plt.savefig('results/gpt/colored_top_edi_scores.png', 
+    plt.savefig(f'results/{MODEL}/colored_top_edi_scores.png', 
                 dpi=300, bbox_inches='tight')
     plt.close()
     
@@ -170,7 +171,7 @@ def create_colored_grid(df, threshold=0.8):
               loc='upper left')
     
     plt.tight_layout()
-    plt.savefig('results/gpt/colored_grid_edi_scores.png', 
+    plt.savefig(f'results/{MODEL}/colored_grid_edi_scores.png', 
                 dpi=300, 
                 bbox_inches='tight')
     plt.close()
@@ -185,10 +186,10 @@ if __name__ == "__main__":
 
     # Generate visualizations
     create_highlighted_heatmap(df)
-    print("Created heatmap at 'results/gpt/edi_scores_heatmap.png'")
+    print(f"Created heatmap at 'results/{MODEL}/edi_scores_heatmap.png'")
 
     create_colored_grid(df, threshold=0.8)
-    print("Created visualization at 'results/gpt/colored_grid_edi_scores.png'")
+    print(f"Created visualization at 'results/{MODEL}/colored_grid_edi_scores.png'")
 
 
 

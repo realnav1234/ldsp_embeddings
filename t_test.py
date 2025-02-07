@@ -7,6 +7,8 @@ import os
 from tqdm import tqdm
 from utils import *
 
+from constants import MODEL
+
 
 def differences_t_test(embeddings_df): 
     s1 = embeddings_df['Sentence1_embedding']
@@ -156,11 +158,11 @@ def plot_difference_distributions(t_stats, p_vals, results_directory):
 
 
 if __name__ == "__main__":
-    embedding_filepaths = get_embeddings_filepaths(model_name="gpt")
+    embedding_filepaths = get_embeddings_filepaths(model_name=MODEL)
 
     for embeddings_csv in tqdm(embedding_filepaths):
         embeddings_df = read_embeddings_df(embeddings_csv)
-        results_directory = get_results_directory(embeddings_csv, "t_test_analysis", model_name="gpt")
+        results_directory = get_results_directory(embeddings_csv, "t_test_analysis", model_name=MODEL)
 
         # Run Wilcoxon analysis on differences
         t_stats, p_vals, wilcoxon_df = differences_t_test(embeddings_df)

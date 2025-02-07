@@ -1,0 +1,30 @@
+Baseline Accuracy: 0.5600
+Low EDI Score Dimensions Accuracy: 0.5033
+
+Cross-Property Accuracies:
+intensifier: 0.7567
+tense: 0.8600
+polarity: 0.7633
+factuality: 0.8233
+voice: 0.7033
+quantity: 0.7667
+negation: 0.7267
+definiteness: 0.6600
+
+Incremental Results:
+Dimensions: 1, Test Accuracy: 0.5133
+Dimensions: 2, Test Accuracy: 0.5500
+Dimensions: 3, Test Accuracy: 0.5233
+Dimensions: 4, Test Accuracy: 0.5400
+Dimensions: 5, Test Accuracy: 0.5200
+Dimensions: 6, Test Accuracy: 0.5300
+Dimensions: 7, Test Accuracy: 0.5333
+Dimensions: 8, Test Accuracy: 0.5233
+Dimensions: 9, Test Accuracy: 0.5600
+Dimensions: 10, Test Accuracy: 0.5633
+Dimensions: 11, Test Accuracy: 0.5533
+Dimensions: 12, Test Accuracy: 0.5700
+Dimensions: 13, Test Accuracy: 0.5233
+Dimensions: 14, Test Accuracy: 0.5167
+Dimensions: 15, Test Accuracy: 0.5167
+Dimensions: 16, Test Accuracy: 0.5033

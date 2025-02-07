@@ -8,6 +8,8 @@ from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 from utils import *
 
+from constants import MODEL
+
 def load_data_for_property(embeddings_csv):
     """Load and prepare data for binary classification"""
     embeddings_df = read_embeddings_df(embeddings_csv)
@@ -46,11 +48,11 @@ def evaluate_property(embeddings_csv, other_property_csvs):
     X_train, X_val, X_test, y_train, y_val, y_test = load_data_for_property(embeddings_csv)
     
     # Load EDI scores
-    results_dir = get_results_directory(embeddings_csv, "edi_scores")
+    results_dir = get_results_directory(embeddings_csv, "edi_scores", model_name=MODEL)
     edi_scores_df = pd.read_csv(os.path.join(results_dir, "edi_score.csv"))
     
     # Get evaluation directory
-    eval_dir = get_results_directory(embeddings_csv, "evaluation")
+    eval_dir = get_results_directory(embeddings_csv, "evaluation", model_name=MODEL)
     os.makedirs(eval_dir, exist_ok=True)
     
     results = {
@@ -68,7 +70,7 @@ def evaluate_property(embeddings_csv, other_property_csvs):
     
     # 2. Incremental evaluation with high EDI scores
     print("Running incremental evaluation...")
-    top_dimensions = edi_scores_df.sort_values('EDI Score', ascending=False)['Dimension'].values
+    top_dimensions = edi_scores_df.sort_values('edi_score', ascending=False)['dimension'].values
     
     for n_dims in tqdm(range(1, len(top_dimensions) + 1)):
         selected_dims = top_dimensions[:n_dims]
@@ -94,7 +96,7 @@ def evaluate_property(embeddings_csv, other_property_csvs):
     
     # 3. Evaluation with low EDI scores
     print("Evaluating low EDI score dimensions...")
-    bottom_dimensions = edi_scores_df.sort_values('EDI Score')['Dimension'].values[:100]
+    bottom_dimensions = edi_scores_df.sort_values('edi_score')['dimension'].values[:100]
     X_train_bottom = get_subset_data(X_train, bottom_dimensions)
     X_val_bottom = get_subset_data(X_val, bottom_dimensions)
     X_test_bottom = get_subset_data(X_test, bottom_dimensions)
@@ -114,13 +116,14 @@ def evaluate_property(embeddings_csv, other_property_csvs):
         top_dims = top_dimensions[:n_dims_needed]
         
         for other_csv in other_property_csvs:
-
-            if "control" in other_csv.lower() or "synonym" in other_csv.lower(): 
+            property_name = os.path.basename(other_csv)[:-21]
+            
+            if "synonym" in other_csv.lower():
                 continue
 
-            property_name = os.path.basename(other_csv)[:-21]  # Get property name from filename
             print(f"Evaluating against {property_name}...")
             
+            # Load other property's data
             X_train_other, X_val_other, X_test_other, y_train_other, y_val_other, y_test_other = \
                 load_data_for_property(other_csv)
             
@@ -141,12 +144,13 @@ def evaluate_property(embeddings_csv, other_property_csvs):
     current_property = os.path.basename(embeddings_csv)[:-21]
     
     # Plot results with property name
-    plot_results(results, eval_dir, current_property)
+    plot_results(results, eval_dir, current_property, best_cross_only=False)
+    plot_results(results, eval_dir, current_property, best_cross_only=True)
     save_results(results, eval_dir)
     
     return results
 
-def plot_results(results, eval_dir, property_name):
+def plot_results(results, eval_dir, property_name, best_cross_only=False):
     """Create visualization plots"""
     # Make figure wider
     plt.figure(figsize=(15, 8))
@@ -161,27 +165,66 @@ def plot_results(results, eval_dir, property_name):
     
     # Plot baseline with darker line
     plt.axhline(y=results['baseline'], 
-                color='#d62728',  # Darker red
+                color='#2ca02c',  # Darker green
                 linestyle='--', 
                 label='Baseline (All Dimensions)',
                 linewidth=2.5)
     
     # Plot low EDI score accuracy with darker line
     plt.axhline(y=results['low_edi'], 
-                color='#2ca02c',  # Darker green
+                color='#d62728',  # Darker red
                 linestyle='--', 
                 label='Low EDI Score Dimensions',
                 linewidth=2.5)
-    
-    # Plot cross-property accuracies with darker colors
-    # Use a different colormap with more distinct colors
+     
+    # Plot cross-property accuracies
     colors = plt.cm.Dark2(np.linspace(0, 1, len(results['cross_property'])))
-    for i, cross_result in enumerate(results['cross_property']):
-        plt.axhline(y=cross_result['accuracy'],
-                   color=colors[i],
-                   linestyle=':',
-                   label=f"Cross-Property: {cross_result['property']}",
-                   linewidth=2.5)
+    
+    best_cross_result = None
+    best_acc = float('-inf')
+    control_result = None
+    
+    # First pass - find control and best non-control result
+    for cross_result in results['cross_property']:
+        if cross_result["property"].lower() == "control":
+            control_result = cross_result
+        elif cross_result['accuracy'] > best_acc:
+            best_acc = cross_result['accuracy']
+            best_cross_result = cross_result
+    
+    # Second pass - plot results
+    if best_cross_only:
+        # Plot only control and best non-control result
+        if control_result:
+            plt.axhline(y=control_result['accuracy'],
+                       color='#7D7C7C',  # grey
+                       linestyle='--',
+                       label=f"Control Top Dimensions",
+                       linewidth=2.5)
+        
+        if best_cross_result:
+            plt.axhline(y=best_cross_result['accuracy'],
+                       color='#743cd4',  # Purple
+                       linestyle=':',
+                       label=f"Best Cross-Property: {best_cross_result['property']}",
+                       linewidth=2.5)
+    else:
+        # Plot all results
+        for i, cross_result in enumerate(results['cross_property']):
+            if cross_result["property"].lower() == "control":
+                style = '--'
+                color = '#d62728'  # Red
+                label = "Control Top Dimensions"
+            else:
+                style = ':'
+                color = colors[i]
+                label = f"Cross-Property: {cross_result['property']}"
+                
+            plt.axhline(y=cross_result['accuracy'],
+                       color=color,
+                       linestyle=style,
+                       label=label,
+                       linewidth=2.5)
     
     plt.xlabel('Number of Dimensions', fontsize=12)
     plt.ylabel('Test Accuracy', fontsize=12)
@@ -201,7 +244,10 @@ def plot_results(results, eval_dir, property_name):
     # Adjust layout to prevent label cutoff while keeping plot wide
     plt.subplots_adjust(right=0.85)  # Make more room for legend while keeping plot wide
     
-    plt.savefig(os.path.join(eval_dir, 'all_props_evaluation_results.png'), 
+    
+    fname = 'evaluation_results.png' if best_cross_only else 'all_props_evaluation_results.png'
+
+    plt.savefig(os.path.join(eval_dir, fname), 
                 bbox_inches='tight',
                 dpi=300)
     plt.close()
@@ -222,7 +268,7 @@ def save_results(results, eval_dir):
                    f"Test Accuracy: {result['test_accuracy']:.4f}\n")
 
 if __name__ == "__main__":
-    embedding_filepaths = get_embeddings_filepaths()
+    embedding_filepaths = get_embeddings_filepaths(model_name=MODEL)
     
     # For each property, evaluate against all other properties
     for i, primary_property in enumerate(tqdm(embedding_filepaths)):

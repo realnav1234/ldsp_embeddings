@@ -8,6 +8,8 @@ from utils import *
 import os
 import matplotlib.pyplot as plt
 
+from constants import MODEL
+
 def perform_rfe(embeddings_df, n_features=20):
 
     sentence1_df = pd.DataFrame({'embedding': embeddings_df['Sentence1_embedding'].tolist(), 'label': 0})
@@ -76,10 +78,10 @@ def save_rfe_results(selected_features, accuracy, model, results_directory):
 
 if __name__ == "__main__":
 
-    embedding_filepaths = get_embeddings_filepaths(model_name="gpt")
+    embedding_filepaths = get_embeddings_filepaths(model_name=MODEL)
     for embeddings_csv in tqdm(embedding_filepaths): 
         # Get results directory
-        results_directory = get_results_directory(embeddings_csv, "rfe_analysis", model_name="gpt")
+        results_directory = get_results_directory(embeddings_csv, "rfe_analysis", model_name=MODEL)
         
         # Perform RFE
         accuracy, selected_features, model = perform_rfe(read_embeddings_df(embeddings_csv))

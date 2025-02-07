@@ -10,6 +10,8 @@ from itertools import product
 from skopt import gp_minimize
 from skopt.space import Real
 
+from constants import MODEL
+
 
 def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=20):
     """
@@ -79,22 +81,22 @@ def save_edi_scores(scores_df, results_directory):
 
 
 if __name__ == "__main__":
-    embedding_filepaths = get_embeddings_filepaths(model_name="gpt")
+    embedding_filepaths = get_embeddings_filepaths(model_name=MODEL)
 
     for embeddings_csv in tqdm(embedding_filepaths):
-        results_directory = get_results_directory(embeddings_csv, "edi_scores", model_name="gpt")
+        results_directory = get_results_directory(embeddings_csv, "edi_scores", model_name=MODEL)
         
         # Load analysis results
         mutual_info_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "mutual_information", model_name="gpt"), 
+            get_results_directory(embeddings_csv, "mutual_information", model_name=MODEL), 
             "mutual_information_all.csv"))
         
         wilcoxon_results_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "t_test_analysis", model_name="gpt"), 
+            get_results_directory(embeddings_csv, "t_test_analysis", model_name=MODEL), 
             "wilcoxon_results.csv"))
         
         rfe_results_df = pd.read_csv(os.path.join(
-            get_results_directory(embeddings_csv, "rfe_analysis", model_name="gpt"), 
+            get_results_directory(embeddings_csv, "rfe_analysis", model_name=MODEL), 
             "rfe_results.csv"))
 
         # Calculate and save EDI scores

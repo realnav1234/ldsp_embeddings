@@ -5,10 +5,11 @@ import os
 from utils import get_dataset_filepaths
 from tqdm import tqdm
 
-model_name = "gpt2"
+hf_model_name = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+model_name = "qwen"
 
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModel.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(hf_model_name)
+model = AutoModel.from_pretrained(hf_model_name)
 
 def get_embedding(text):
   inputs = tokenizer(text, return_tensors="pt")
@@ -29,7 +30,7 @@ if __name__ == "__main__":
        df['Sentence1_embedding'] = df['Sentence1'].apply(get_embedding)
        df['Sentence2_embedding'] = df['Sentence2'].apply(get_embedding)
        
-       df.to_csv(os.path.join("embeddings", os.path.basename(dataset_csv).replace(".csv", "_gpt_embeddings.csv")))
+       df.to_csv(os.path.join("embeddings", model_name, os.path.basename(dataset_csv).replace(".csv", f"_{model_name}_embeddings.csv")))
 
 
     print("Embedding Generation Complete")
