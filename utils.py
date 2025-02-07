@@ -24,9 +24,8 @@ def get_linguistic_property(embeddings_csv):
     return embeddings_csv.split("_")[0]
 
 
-def get_results_directory(embeddings_csv, metric):
-    p = os.path.join("results", get_linguistic_property(os.path.basename(embeddings_csv)), metric)
-
+def get_results_directory(embeddings_csv, metric, model_name="bert"):
+    p = os.path.join("results", model_name, get_linguistic_property(os.path.basename(embeddings_csv)), metric)
     if not os.path.exists(p):
         os.makedirs(p)
     
@@ -42,5 +41,4 @@ def read_embeddings_df(embeddings_csv):
             embeddings_df[col] = embeddings_df[col].apply(lambda x: np.fromstring(x.strip('[]'), sep=' '))
     
     return embeddings_df
-
 
