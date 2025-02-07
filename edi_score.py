@@ -11,120 +11,105 @@ from skopt import gp_minimize
 from skopt.space import Real
 
 
-def calculate_edi_scores(embed_fpath, weights=(0.34, 0.33, 0.33)):
+def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, clf_weights_df, rfe_results_df, N=20):
     """
-    Combine t-test p-values, mutual information scores, logistic regression coefficients,
-    and PCA contributions into a single score (embedding dimension importance score).
-    
-    Args:
-        embed_fpath (string): filename for embeddings
-        weights (tuple): weights for t-test, MI, logistic, and PCA scores respectively
-                        (should sum to 1)
-    
-    Returns:
-        array-like: Combined scores for each dimension
+    Calculate EDI (Embedding Dimension Importance) scores incorporating:
+    - Mutual Information scores
+    - Wilcoxon test p-values (negative log likelihood)
+    - RFE-selected logistic regression weights
     """
-    
-    # Load results
-    t_test_results_df = pd.read_csv(os.path.join(get_results_directory(embed_fpath, "t_test_analysis"), "t_test_results.csv"))
-    mi_results_df = pd.read_csv(os.path.join(get_results_directory(embed_fpath, "mutual_information"), "mutual_information_all.csv"))
-    rfe_results_df = pd.read_csv(os.path.join(get_results_directory(embed_fpath, "rfe_analysis"), "rfe_results.csv"))
+    # Define weights for different analyses
+    WEIGHTS = {
+        'mutual_info': 0.33,
+        'wilcoxon': 0.33,
+        'rfe_logistic': 0.34
+    }
+    assert abs(sum(WEIGHTS.values()) - 1.0) < 1e-10, "Weights must sum to 1"
 
-    # Convert inputs to numpy arrays
-    t_test_pvals = np.array(t_test_results_df['p_value'])
-    mi_scores = np.array(mi_results_df['Mutual_Information'])
+    # Initialize scores arrays
+    n_dims = 768
+    mi_scores = np.zeros(n_dims)
+    wilcoxon_scores = np.zeros(n_dims)
+    rfe_logistic_scores = np.zeros(n_dims)
 
-    rfe_importance = np.zeros(len(t_test_pvals))
-    rfe_importance[rfe_results_df['Feature']] = rfe_results_df['Importance']
-    
-    # Calculate -log(p) for t-test scores
-    epsilon = 1e-15
-    t_test_scores = -np.log(t_test_pvals + epsilon)
-    
-    # Normalize each score type to [0,1] range
-    t_test_scores = (t_test_scores - t_test_scores.min()) / (t_test_scores.max() - t_test_scores.min())
-    mi_scores = (mi_scores - mi_scores.min()) / (mi_scores.max() - mi_scores.min())
-    rfe_scores = (rfe_importance - rfe_importance.min()) / (rfe_importance.max() - rfe_importance.min())
-    
-    # Combine scores using weighted average
-    combined_scores = (
-        weights[0] * t_test_scores +
-        weights[1] * mi_scores +
-        weights[2] * rfe_scores
+    # Calculate Mutual Information scores
+    mi_values = mutual_info_df['Mutual_Information'].values
+    mi_scores = (mi_values - mi_values.min()) / (mi_values.max() - mi_values.min())
+
+    # Calculate Wilcoxon scores using negative log likelihood of p-values
+    epsilon = 1e-15  # To avoid log(0)
+    p_values = wilcoxon_results_df['wilcoxon_pvalue_bh'].values
+    wilcoxon_scores = -np.log(p_values + epsilon)
+    wilcoxon_scores = (wilcoxon_scores - wilcoxon_scores.min()) / (wilcoxon_scores.max() - wilcoxon_scores.min())
+
+    # Calculate RFE-Logistic scores
+    rfe_dimensions = rfe_results_df['Feature'].values
+    clf_weights = clf_weights_df['Weight'].values
+    # Only use logistic weights for RFE-selected features
+    rfe_logistic_scores[rfe_dimensions] = clf_weights[rfe_dimensions]
+    # Normalize RFE-logistic scores
+    if rfe_logistic_scores.max() != rfe_logistic_scores.min():
+        rfe_logistic_scores = (rfe_logistic_scores - rfe_logistic_scores.min()) / (rfe_logistic_scores.max() - rfe_logistic_scores.min())
+
+    # Combine scores using weights
+    final_scores = (
+        WEIGHTS['mutual_info'] * mi_scores +
+        WEIGHTS['wilcoxon'] * wilcoxon_scores +
+        WEIGHTS['rfe_logistic'] * rfe_logistic_scores
     )
-    
-    return combined_scores
 
-def objective_function(weights):
-
-    w1, w2 = weights
-    w3 = 1 - (w1 + w2)
-    if w3 < 0:  # Invalid set if w3 is negative
-        return 0
-    
-    weights = (w1, w2, w3)
-
-    acc = 0
-    embedding_filepaths = get_embeddings_filepaths()
-
-    for fname in embedding_filepaths:
-        embeddings_df = read_embeddings_df(fname)
-
-        sentence1_df = pd.DataFrame({'embedding': embeddings_df['Sentence1_embedding'].tolist(), 'label': 0})
-        sentence2_df = pd.DataFrame({'embedding': embeddings_df['Sentence2_embedding'].tolist(), 'label': 1})
-        df = pd.concat([sentence1_df, sentence2_df], ignore_index=True)
-
-        edi_scores = calculate_edi_scores(fname, weights)
-
-        top_20_indices = np.argsort(edi_scores)[-20:]
-
-        # Filter embeddings to keep only top 20 dimensions
-        df['embedding'] = df['embedding'].apply(lambda x: np.array(x)[top_20_indices])
-
-        X = np.array(df['embedding'].tolist())
-        labels = np.array(df['label'].tolist())
-        X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.2, random_state=42)
-        clf = LogisticRegression(random_state=42)
-        clf.fit(X_train, y_train)
-
-        y_pred = clf.predict(X_test)
-        acc += accuracy_score(y_test, y_pred)
-    
-    avg_acc = acc/len(embedding_filepaths)
-
-    print(weights, avg_acc)
-
-    return -avg_acc  # Maximize accuracy
-
-def save_edi_scores(edi_scores, results_directory): 
-    edi_df = pd.DataFrame({
-        'Dimension': [i for i in range(len(edi_scores))],
-        'EDI Score': edi_scores
+    # Create and sort DataFrame
+    scores_df = pd.DataFrame({
+        'dimension': range(n_dims),
+        'edi_score': final_scores,
+        'mi_score': mi_scores,
+        'wilcoxon_score': wilcoxon_scores,
+        'rfe_logistic_score': rfe_logistic_scores
     })
+    
+    scores_df = scores_df.sort_values('edi_score', ascending=False)
+    
+    return scores_df
 
-    edi_df.to_csv(os.path.join(results_directory, "edi_score.csv"), index=False)
 
-    top_20_df = edi_df.nlargest(20, 'EDI Score')
-    top_20_df.to_csv(os.path.join(results_directory, "top_20_edi_scores.csv"), index=False)
+def save_edi_scores(scores_df, results_directory):
+    """Save EDI scores to CSV file"""
+    output_path = os.path.join(results_directory, "edi_score.csv")
+    scores_df.to_csv(output_path, index=False)
+    print(f"EDI scores saved to: {output_path}")
 
-if __name__ == "__main__": 
 
-    optimized_weights = (0.6675638190850008, 0.09635150783424912, 0.23608467308074998)
-
-    # # Define search space for the first 3 weights
-    # search_space = [Real(0, 1, name=f"w{i}") for i in range(2)]
-
-    # # Optimize
-    # result = gp_minimize(objective_function, search_space, n_calls=100)
-    # optimized_weights = result.x + [1 - sum(result.x)]
-    # print("Best weights:", optimized_weights)
-
+if __name__ == "__main__":
     embedding_filepaths = get_embeddings_filepaths()
 
     for embeddings_csv in tqdm(embedding_filepaths):
-        edi_scores = calculate_edi_scores(embeddings_csv, optimized_weights)
         results_directory = get_results_directory(embeddings_csv, "edi_scores")
+        
+        # Load analysis results
+        mutual_info_df = pd.read_csv(os.path.join(
+            get_results_directory(embeddings_csv, "mutual_information"), 
+            "mutual_information_all.csv"))
+        
+        wilcoxon_results_df = pd.read_csv(os.path.join(
+            get_results_directory(embeddings_csv, "t_test_analysis"), 
+            "wilcoxon_results.csv"))
+        
+        clf_weights_df = pd.read_csv(os.path.join(
+            get_results_directory(embeddings_csv, "logistic_classifier"), 
+            "classifier_weights.csv"))
+        
+        rfe_results_df = pd.read_csv(os.path.join(
+            get_results_directory(embeddings_csv, "rfe_analysis"), 
+            "rfe_results.csv"))
+
+        # Calculate and save EDI scores
+        edi_scores = calculate_edi_scores(
+            mutual_info_df, wilcoxon_results_df, clf_weights_df, rfe_results_df
+            )
+        
         save_edi_scores(edi_scores, results_directory)
+
+    print("\nEDI score calculation complete.")
 
 
     
