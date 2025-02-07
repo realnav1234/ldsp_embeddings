@@ -5,6 +5,9 @@ import os
 from utils import get_dataset_filepaths
 from tqdm import tqdm
 
+tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
+model = AutoModel.from_pretrained('bert-base-uncased')
+
 def get_embedding(text):
   inputs = tokenizer(text, return_tensors="pt")
   with torch.no_grad():
@@ -16,8 +19,6 @@ if __name__ == "__main__":
 
     dataset_filepaths = get_dataset_filepaths()
     
-    tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
-    model = AutoModel.from_pretrained('bert-base-uncased')
 
     for dataset_csv in tqdm(dataset_filepaths):
        
