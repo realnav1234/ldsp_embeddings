@@ -7,6 +7,39 @@ import os
 from tqdm import tqdm
 from utils import *
 
+
+def differences_t_test(embeddings_df): 
+    s1 = embeddings_df['Sentence1_embedding']
+    s2 = embeddings_df['Sentence2_embedding']
+
+    s1, s2 = np.vstack(s1), np.vstack(s2)
+    diff = s1 - s2
+    diff_means = np.mean(diff, axis=0)
+
+    t_stats, p_values = np.empty(768), np.empty(768)
+
+    for d in range(768): 
+        # t_stat, p_val = stats.ttest_1samp(diff[:, d], popmean=0)
+        t_stat, p_val = stats.wilcoxon(diff[:, d])
+        t_stats[d] = t_stat
+        p_values[d] = p_val
+
+    # Create results DataFrame
+    results = []
+    for dim in range(768):
+        results.append({
+            'dimension': dim,
+            'wilcoxon_statistic': t_stats[dim],
+            'wilcoxon_pvalue': p_values[dim],
+            'mean_difference': diff_means[dim]
+        })
+    
+    results_df = pd.DataFrame(results)
+    
+
+    return t_stats, p_values, results_df
+
+
 def perform_t_test(embeddings_df, dim):
 
     # sentence2_values = []
@@ -30,13 +63,13 @@ def save_t_test_results(results_df, results_directory):
 
 def apply_multiple_testing_correction(results_df):
     """
-    Apply both Bonferroni and Benjamini-Hochberg corrections to p-values
+    Apply Benjamini-Hochberg corrections to p-values
     """
-    # Bonferroni correction
-    results_df['p_value_bonferroni'] = multipletests(
-        results_df['p_value'], 
-        method='bonferroni'
-    )[1]
+    # # Bonferroni correction
+    # results_df['p_value_bonferroni'] = multipletests(
+    #     results_df['p_value'], 
+    #     method='bonferroni'
+    # )[1]
     
     # Benjamini-Hochberg correction
     results_df['p_value_bh'] = multipletests(
@@ -47,11 +80,19 @@ def apply_multiple_testing_correction(results_df):
     return results_df
 
 
-def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory):
+def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory, test_type='t_test'):
+    """
+    Plot distributions for dimensions with most and least significant differences.
+    
+    Parameters:
+        test_type: Either 't_test' or 'wilcoxon' to determine which p-values to use
+    """
+    # Get column names based on test type
+    pval_col = 't_pvalue_bh' if test_type == 't_test' else 'wilcoxon_pvalue_bh'
     
     # Get top-4 and bottom-4 dimensions based on p-values
-    top_4_dims = results_df.nsmallest(4, 'p_value_bh')['dimension'].values
-    bottom_4_dims = results_df.nlargest(4, 'p_value_bh')['dimension'].values
+    top_4_dims = results_df.nsmallest(4, pval_col)['dimension'].values
+    bottom_4_dims = results_df.nlargest(4, pval_col)['dimension'].values
 
     # Plot top-4 dimensions
     plt.figure(figsize=(15, 10))
@@ -66,7 +107,7 @@ def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory):
         plt.title(f'Top {i+1}: Dimension {dim}')
         plt.legend(loc='upper right')
     plt.tight_layout()
-    plt.savefig(os.path.join(results_directory, "top_4_p_values.png"))
+    plt.savefig(os.path.join(results_directory, f"top_4_p_values_{test_type}.png"))
     plt.close()
 
     # Plot bottom-4 dimensions
@@ -82,32 +123,74 @@ def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory):
         plt.title(f'Bottom {i+1}: Dimension {dim}')
         plt.legend(loc='upper right')
     plt.tight_layout()
-    plt.savefig(os.path.join(results_directory, "bottom_4_p_values.png"))
+    plt.savefig(os.path.join(results_directory, f"bottom_4_p_values_{test_type}.png"))
+    plt.close()
+
+
+def plot_difference_distributions(t_stats, p_vals, results_directory):
+    """
+    Create a bar plot showing the significance of differences across all dimensions.
+    Taller bars indicate more significant differences from zero.
+    """
+    plt.figure(figsize=(20, 6))
+    
+    # Convert p-values to -log10 scale for better visualization
+    # Add small constant to avoid log(0)
+    log_p_values = -np.log10(p_vals + 1e-300)
+    
+    # Create bar plot
+    plt.bar(range(len(log_p_values)), log_p_values, alpha=0.6)
+    
+    # Add a horizontal line at -log10(0.05) to show significance threshold
+    plt.axhline(y=-np.log10(0.05), color='r', linestyle='--', alpha=0.5, label='p=0.05 threshold')
+    
+    plt.xlabel('Embedding Dimensions')
+    plt.ylabel('-log10(p-value)')
+    plt.title('Significance of Differences Across Embedding Dimensions')
+    plt.legend()
+    
+    # Save the plot
+    plt.tight_layout()
+    plt.savefig(os.path.join(results_directory, "dimension_differences.png"))
     plt.close()
 
 
 if __name__ == "__main__":
-
     embedding_filepaths = get_embeddings_filepaths()
 
     for embeddings_csv in tqdm(embedding_filepaths):
         embeddings_df = read_embeddings_df(embeddings_csv)
-
-        results = []
-        for dim in range(len(embeddings_df['Sentence1_embedding'][0])):
-            t_statistic, p_value = perform_t_test(embeddings_df, dim)
-            results.append({'dimension': dim, 't_statistic': t_statistic, 'p_value': p_value})
-
-        results_df = pd.DataFrame(results)
-        
-        # Apply multiple testing correction
-        results_df = apply_multiple_testing_correction(results_df)
-
         results_directory = get_results_directory(embeddings_csv, "t_test_analysis")
 
-        save_t_test_results(results_df, results_directory)
-
-        plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory)
+        # Run Wilcoxon analysis on differences
+        t_stats, p_vals, wilcoxon_df = differences_t_test(embeddings_df)
         
+        # Apply BH correction to Wilcoxon results
+        wilcoxon_df['wilcoxon_pvalue_bh'] = multipletests(wilcoxon_df['wilcoxon_pvalue'], method='fdr_bh')[1]
+        
+        # Run independent t-tests between groups
+        independent_t_results = []
+        for dim in range(768):
+            t_stat, p_val = perform_t_test(embeddings_df, dim)
+            independent_t_results.append({
+                'dimension': dim,
+                't_statistic': t_stat,
+                't_pvalue': p_val
+            })
+        
+        # Create independent t-test DataFrame and apply correction
+        t_test_df = pd.DataFrame(independent_t_results)
+        t_test_df['t_pvalue_bh'] = multipletests(t_test_df['t_pvalue'], method='fdr_bh')[1]
+        
+        # Save both results
+        wilcoxon_df.to_csv(os.path.join(results_directory, "wilcoxon_results.csv"), index=False)
+        t_test_df.to_csv(os.path.join(results_directory, "t_test_results.csv"), index=False)
+        
+        # Generate and save plots
+        plot_difference_distributions(t_stats, p_vals, results_directory)
+        
+        # Plot distributions for both test types
+        plot_top_and_bottom_p_values(t_test_df, embeddings_df, results_directory, test_type='t_test')
+        plot_top_and_bottom_p_values(wilcoxon_df, embeddings_df, results_directory, test_type='wilcoxon')
 
-    print("T-test analysis complete.")
+    print("\nT-test analysis complete.")
