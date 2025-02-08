@@ -28,13 +28,9 @@ def load_and_process_embeddings(embedding_filepaths):
     property_names = []
     
     for filepath in embedding_filepaths:
-        # Skip control and synonym properties
-        if 'synonym' in filepath.lower():
-            continue
-            
+
         # Extract property name from filepath
-        # print(proper:-21))
-        property_name = os.path.basename(filepath)[:-25]
+        property_name = os.path.basename(filepath)[:-CUT]
         property_names.append(property_name)
 
         # Load embeddings

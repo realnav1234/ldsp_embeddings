@@ -1,15 +1,16 @@
-                precision    recall  f1-score   support
+              precision    recall  f1-score   support
 
-     control_l       0.55      0.33      0.41       201
-definiteness_l       0.87      0.87      0.87       179
-  factuality_l       0.93      0.99      0.96       195
- intensifier_l       0.86      0.96      0.91       211
-    negation_l       0.94      0.91      0.92       207
-    polarity_l       0.92      0.94      0.93       204
-    quantity_l       0.94      0.99      0.96       191
-       tense_l       0.90      0.97      0.93       209
-       voice_l       0.88      0.98      0.93       203
+     control       0.36      0.25      0.29       175
+definiteness       0.93      0.85      0.89       192
+  factuality       0.94      0.99      0.97       208
+ intensifier       0.89      0.96      0.92       202
+    negation       0.91      0.94      0.92       186
+    polarity       0.92      0.90      0.91       212
+    quantity       0.98      0.98      0.98       201
+     synonym       0.70      0.73      0.71       211
+       tense       0.91      1.00      0.95       204
+       voice       0.89      0.98      0.93       209
 
-      accuracy                           0.88      1800
-     macro avg       0.87      0.88      0.87      1800
-  weighted avg       0.87      0.88      0.87      1800
+    accuracy                           0.86      2000
+   macro avg       0.84      0.85      0.85      2000
+weighted avg       0.85      0.86      0.85      2000

@@ -1,15 +1,16 @@
               precision    recall  f1-score   support
 
-         con       0.66      0.44      0.53       201
-    definite       0.87      0.92      0.89       204
-      factua       0.96      1.00      0.98       191
-     intensi       0.93      0.97      0.95       195
-        nega       0.93      0.94      0.93       209
-        pola       0.89      0.94      0.92       179
-        quan       0.97      0.99      0.98       207
-           t       0.95      0.98      0.96       211
-           v       0.91      0.99      0.95       203
+     control       0.45      0.27      0.34       175
+definiteness       0.89      0.90      0.89       212
+  factuality       0.97      0.99      0.98       209
+ intensifier       0.96      0.99      0.97       208
+    negation       0.94      0.96      0.95       204
+    polarity       0.92      0.92      0.92       201
+    quantity       0.98      0.99      0.98       211
+     synonym       0.68      0.81      0.74       192
+       tense       0.94      0.99      0.97       202
+       voice       0.95      0.97      0.96       186
 
-    accuracy                           0.91      1800
-   macro avg       0.90      0.91      0.90      1800
-weighted avg       0.90      0.91      0.90      1800
+    accuracy                           0.89      2000
+   macro avg       0.87      0.88      0.87      2000
+weighted avg       0.88      0.89      0.88      2000

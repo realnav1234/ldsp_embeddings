@@ -1,108 +1,120 @@
 
-Top dimensions for intensi:
-Dimension 627: 1.1258
-Dimension 400: 1.1393
-Dimension 235: 1.1728
-Dimension 136: -1.1856
-Dimension 578: 1.2032
-Dimension 20: 1.2463
-Dimension 366: 1.2667
-Dimension 327: -1.2765
-Dimension 162: 1.4266
-Dimension 112: -1.5827
+Top dimensions for intensifier:
+Dimension 717: -1.2918
+Dimension 693: 1.3200
+Dimension 449: -1.3452
+Dimension 249: 1.3486
+Dimension 58: 1.3559
+Dimension 515: 1.3568
+Dimension 162: 1.3657
+Dimension 601: -1.4020
+Dimension 627: 1.4604
+Dimension 572: 1.6180
 
-Top dimensions for t:
-Dimension 613: 0.8373
-Dimension 377: 0.8457
-Dimension 527: 0.8503
-Dimension 209: -0.8910
-Dimension 640: 0.8969
-Dimension 342: -0.8986
-Dimension 335: 0.9035
-Dimension 307: -1.0283
-Dimension 510: -1.0420
-Dimension 46: -1.1468
+Top dimensions for tense:
+Dimension 553: 0.8106
+Dimension 307: -0.8166
+Dimension 656: 0.8521
+Dimension 230: 0.8644
+Dimension 763: -0.8759
+Dimension 421: 0.9008
+Dimension 463: -0.9135
+Dimension 510: -0.9336
+Dimension 69: -0.9575
+Dimension 46: -1.3565
 
-Top dimensions for pola:
-Dimension 210: 0.5304
-Dimension 20: -0.5372
-Dimension 650: 0.5555
-Dimension 418: 0.5871
-Dimension 483: 0.6101
-Dimension 73: 0.6148
-Dimension 56: 0.6848
-Dimension 371: -0.7073
-Dimension 60: -0.7328
-Dimension 409: -0.7645
+Top dimensions for synonym:
+Dimension 683: -0.6393
+Dimension 60: -0.6589
+Dimension 301: 0.6637
+Dimension 409: -0.7017
+Dimension 331: 0.7068
+Dimension 656: -0.7443
+Dimension 56: 0.7570
+Dimension 20: -0.7776
+Dimension 371: -0.7790
+Dimension 483: 0.9385
 
-Top dimensions for factua:
-Dimension 589: 0.7575
-Dimension 241: 0.7589
-Dimension 95: 0.7661
-Dimension 732: 0.7962
-Dimension 225: -0.8041
-Dimension 685: 0.8156
-Dimension 544: -0.8167
-Dimension 663: 0.8185
-Dimension 372: 0.8321
-Dimension 114: -0.8562
+Top dimensions for polarity:
+Dimension 505: -0.8050
+Dimension 112: 0.8145
+Dimension 349: -0.8376
+Dimension 602: -0.8459
+Dimension 251: -0.8559
+Dimension 271: 0.8571
+Dimension 372: 0.9290
+Dimension 95: 0.9560
+Dimension 663: 0.9910
+Dimension 286: -0.9941
 
-Top dimensions for v:
-Dimension 281: 0.7401
-Dimension 125: 0.7449
-Dimension 571: 0.7594
-Dimension 391: 0.7729
-Dimension 101: 0.7944
-Dimension 341: 0.7993
-Dimension 682: 0.8023
-Dimension 404: -0.8161
-Dimension 263: -0.9070
-Dimension 544: 0.9846
+Top dimensions for factuality:
+Dimension 220: -0.7830
+Dimension 683: 0.7939
+Dimension 122: 0.8047
+Dimension 341: 0.8081
+Dimension 674: 0.8815
+Dimension 505: -0.9478
+Dimension 236: 0.9829
+Dimension 265: -1.0449
+Dimension 263: -1.0614
+Dimension 544: 1.2173
 
-Top dimensions for quan:
-Dimension 462: -0.8006
-Dimension 669: 0.8043
-Dimension 385: 0.8043
-Dimension 714: 0.8315
-Dimension 115: -0.8595
-Dimension 291: 0.9343
-Dimension 263: 0.9523
-Dimension 136: 0.9621
-Dimension 500: 0.9744
-Dimension 261: 1.0793
+Top dimensions for voice:
+Dimension 193: -0.9340
+Dimension 500: 0.9375
+Dimension 145: -0.9466
+Dimension 127: -1.0035
+Dimension 705: -1.0065
+Dimension 263: 1.0258
+Dimension 120: 1.0385
+Dimension 379: -1.1093
+Dimension 110: -1.1112
+Dimension 489: 1.1658
 
-Top dimensions for nega:
-Dimension 663: -0.6350
-Dimension 192: -0.6898
-Dimension 173: 0.6948
-Dimension 67: -0.6988
-Dimension 426: 0.6996
-Dimension 390: 0.6999
-Dimension 649: -0.7207
-Dimension 354: -0.7559
-Dimension 738: -0.7761
-Dimension 314: -0.8113
+Top dimensions for quantity:
+Dimension 435: 0.6654
+Dimension 173: 0.6656
+Dimension 135: 0.6666
+Dimension 390: 0.7102
+Dimension 649: -0.7108
+Dimension 67: -0.7111
+Dimension 192: -0.7631
+Dimension 314: -0.8180
+Dimension 354: -0.8325
+Dimension 42: 0.8486
 
-Top dimensions for definite:
-Dimension 484: 0.7114
-Dimension 668: -0.7121
-Dimension 342: 0.7430
-Dimension 229: -0.7568
-Dimension 592: -0.7920
-Dimension 751: 0.8420
-Dimension 422: -0.8674
-Dimension 375: 0.8694
-Dimension 38: -0.9049
-Dimension 718: -1.0071
+Top dimensions for negation:
+Dimension 315: 0.9849
+Dimension 686: -0.9913
+Dimension 269: 0.9978
+Dimension 394: 1.0079
+Dimension 404: 1.0303
+Dimension 585: -1.0481
+Dimension 572: -1.0510
+Dimension 264: 1.0589
+Dimension 366: 1.2119
+Dimension 632: 1.2159
 
-Top dimensions for con:
-Dimension 260: 0.8132
-Dimension 766: -0.8287
-Dimension 757: -0.8399
-Dimension 366: -0.8490
-Dimension 286: 0.9392
-Dimension 111: -0.9411
-Dimension 750: 0.9898
-Dimension 229: 1.0019
-Dimension 257: -1.1128
-Dimension 751: -1.1797
+Top dimensions for definiteness:
+Dimension 751: 0.7076
+Dimension 750: -0.7093
+Dimension 405: -0.7314
+Dimension 634: -0.7436
+Dimension 508: -0.7649
+Dimension 375: 0.8196
+Dimension 592: -0.8255
+Dimension 515: -0.8490
+Dimension 38: -0.8528
+Dimension 718: -1.0544
+
+Top dimensions for control:
+Dimension 766: -0.8280
+Dimension 260: 0.8362
+Dimension 27: 0.8376
+Dimension 117: 0.8961
+Dimension 229: 0.8970
+Dimension 653: 0.9045
+Dimension 257: -0.9357
+Dimension 111: -1.0105
+Dimension 286: 1.1165
+Dimension 751: -1.2977

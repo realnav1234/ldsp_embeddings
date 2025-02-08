@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score
 from tqdm import tqdm
 from utils import *
 
-from constants import MODEL
+from constants import *
 
 def load_data_for_property(embeddings_csv):
     """Load and prepare data for binary classification"""
@@ -23,20 +23,20 @@ def load_data_for_property(embeddings_csv):
     y = np.array(df['label'].tolist())
     
     # Split into train, val, test
-    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, random_state=42)
-    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
     
-    return X_train, X_val, X_test, y_train, y_val, y_test
+    return X_train, X_test, y_train, y_test
 
-def train_and_evaluate(X_train, X_val, X_test, y_train, y_val, y_test):
+def train_and_evaluate(X_train, X_test, y_train, y_test):
     """Train logistic classifier and return accuracies"""
     clf = LogisticRegression(random_state=42, max_iter=1000)
     clf.fit(X_train, y_train)
     
-    val_accuracy = accuracy_score(y_val, clf.predict(X_val))
+    # val_accuracy = accuracy_score(y_val, clf.predict(X_val))
     test_accuracy = accuracy_score(y_test, clf.predict(X_test))
     
-    return val_accuracy, test_accuracy
+    return test_accuracy
 
 def get_subset_data(X, selected_dims):
     """Get data subset using only selected dimensions"""
@@ -45,7 +45,7 @@ def get_subset_data(X, selected_dims):
 def evaluate_property(embeddings_csv, other_property_csvs):
     """Run all evaluations for a linguistic property"""
     # Load data
-    X_train, X_val, X_test, y_train, y_val, y_test = load_data_for_property(embeddings_csv)
+    X_train, X_test, y_train, y_test = load_data_for_property(embeddings_csv)
     
     # Load EDI scores
     results_dir = get_results_directory(embeddings_csv, "edi_scores", model_name=MODEL)
@@ -64,8 +64,7 @@ def evaluate_property(embeddings_csv, other_property_csvs):
     
     # 1. Baseline (all dimensions)
     print("Computing baseline...")
-    baseline_val_acc, baseline_test_acc = train_and_evaluate(
-        X_train, X_val, X_test, y_train, y_val, y_test)
+    baseline_test_acc = train_and_evaluate(X_train, X_test, y_train, y_test)
     results['baseline'] = baseline_test_acc
     
     # 2. Incremental evaluation with high EDI scores
@@ -77,33 +76,31 @@ def evaluate_property(embeddings_csv, other_property_csvs):
         
         # Get data subset
         X_train_subset = get_subset_data(X_train, selected_dims)
-        X_val_subset = get_subset_data(X_val, selected_dims)
+        # X_val_subset = get_subset_data(X_val, selected_dims)
         X_test_subset = get_subset_data(X_test, selected_dims)
         
-        val_acc, test_acc = train_and_evaluate(
-            X_train_subset, X_val_subset, X_test_subset, 
-            y_train, y_val, y_test)
+        test_acc = train_and_evaluate(
+            X_train_subset, X_test_subset, 
+            y_train, y_test)
         
         results['incremental'].append({
             'n_dimensions': n_dims,
             'test_accuracy': test_acc,
-            'val_accuracy': val_acc
         })
         
         # Stop if we reach close to baseline accuracy
-        if val_acc >= baseline_val_acc * 0.95:
+        if test_acc >= baseline_test_acc * 0.95:
             break
     
     # 3. Evaluation with low EDI scores
     print("Evaluating low EDI score dimensions...")
     bottom_dimensions = edi_scores_df.sort_values('edi_score')['dimension'].values[:100]
     X_train_bottom = get_subset_data(X_train, bottom_dimensions)
-    X_val_bottom = get_subset_data(X_val, bottom_dimensions)
     X_test_bottom = get_subset_data(X_test, bottom_dimensions)
     
-    _, low_edi_test_acc = train_and_evaluate(
-        X_train_bottom, X_val_bottom, X_test_bottom,
-        y_train, y_val, y_test)
+    low_edi_test_acc = train_and_evaluate(
+        X_train_bottom, X_test_bottom,
+        y_train, y_test)
     results['low_edi'] = low_edi_test_acc
     
     # 4. Cross-property evaluation
@@ -111,37 +108,36 @@ def evaluate_property(embeddings_csv, other_property_csvs):
     
     if other_property_csvs:
         print("Running cross-property evaluations...")
-        # Get number of dimensions we needed to reach 95% baseline accuracy
-        n_dims_needed = len(results['incremental'])
-        top_dims = top_dimensions[:n_dims_needed]
-        
+        # Use top 25 dimensions for cross-property evaluation
+        N_CROSS_DIMS = 25
+                
         for other_csv in other_property_csvs:
-            property_name = os.path.basename(other_csv)[:-25]
-            
-            if "synonym" in other_csv.lower():
-                continue
-
+            property_name = os.path.basename(other_csv)[:-CUT]
             print(f"Evaluating against {property_name}...")
             
-            # Load other property's data
-            X_train_other, X_val_other, X_test_other, y_train_other, y_val_other, y_test_other = \
-                load_data_for_property(other_csv)
+            # Load other property's EDI scores to get its top dimensions
+            other_results_dir = get_results_directory(other_csv, "edi_scores", model_name=MODEL)
+            other_edi_scores_df = pd.read_csv(os.path.join(other_results_dir, "edi_score.csv"))
             
-            X_train_cross = get_subset_data(X_train_other, top_dims)
-            X_val_cross = get_subset_data(X_val_other, top_dims)
-            X_test_cross = get_subset_data(X_test_other, top_dims)
+            # Get top dimensions from other property
+            other_top_dims = other_edi_scores_df.sort_values('edi_score', ascending=False)['dimension'].values[:N_CROSS_DIMS]
             
-            _, cross_property_test_acc = train_and_evaluate(
-                X_train_cross, X_val_cross, X_test_cross,
-                y_train_other, y_val_other, y_test_other)
+            # Use other property's top dimensions on current property's data
+            X_train_cross = get_subset_data(X_train, other_top_dims)
+            X_test_cross = get_subset_data(X_test, other_top_dims)
+            
+            # Train and evaluate using current property's labels
+            test_accuracy = train_and_evaluate(
+                X_train_cross, X_test_cross,
+                y_train, y_test)
             
             results['cross_property'].append({
                 'property': property_name,
-                'accuracy': cross_property_test_acc
+                'accuracy': test_accuracy
             })
     
     # Get property name for plot title
-    current_property = os.path.basename(embeddings_csv)[:-25]
+    current_property = os.path.basename(embeddings_csv)[:-CUT]
     
     # Plot results with property name
     plot_results(results, eval_dir, current_property, best_cross_only=False)

@@ -1,15 +1,15 @@
 Training Metrics:
-Training Time: 14.55 seconds
+Training Time: 19.59 seconds
 
 Training Set Metrics:
-Accuracy: 0.9908
-F1 Score: 0.9909
+Accuracy: 0.9784
+F1 Score: 0.9786
 
 Validation Set Metrics:
-Accuracy: 0.9104
-F1 Score: 0.9003
+Accuracy: 0.8925
+F1 Score: 0.8773
 
 Test Set Metrics:
-Accuracy: 0.9050
-F1 Score: 0.8906
+Accuracy: 0.8890
+F1 Score: 0.8728
 
