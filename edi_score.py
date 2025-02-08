@@ -33,7 +33,6 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=
     mi_scores = np.zeros(n_dims)
     wilcoxon_scores = np.zeros(n_dims)
     rfe_scores = np.zeros(n_dims)
-
     # Calculate Mutual Information scores
     mi_values = mutual_info_df['Mutual_Information'].values
     mi_scores = (mi_values - mi_values.min()) / (mi_values.max() - mi_values.min())
@@ -43,6 +42,7 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=
     p_values = wilcoxon_results_df['wilcoxon_pvalue_bh'].values
     wilcoxon_scores = -np.log(p_values + epsilon)
     wilcoxon_scores = (wilcoxon_scores - wilcoxon_scores.min()) / (wilcoxon_scores.max() - wilcoxon_scores.min())
+    wilcoxon_scores = np.nan_to_num(wilcoxon_scores)
 
     # Calculate RFE scores using importance values
     rfe_dimensions = rfe_results_df['Feature'].values
@@ -84,6 +84,7 @@ if __name__ == "__main__":
     embedding_filepaths = get_embeddings_filepaths(model_name=MODEL)
 
     for embeddings_csv in tqdm(embedding_filepaths):
+        
         results_directory = get_results_directory(embeddings_csv, "edi_scores", model_name=MODEL)
         
         # Load analysis results
