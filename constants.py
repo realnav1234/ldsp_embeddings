@@ -1,1 +1,1 @@
-MODEL = "gpt"
+MODEL = "mpnet"

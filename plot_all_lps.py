@@ -109,12 +109,12 @@ def create_colored_top_values(df, threshold=0.5):
     plt.title(f'EDI Scores Above {threshold} for Each Linguistic Property')
     
     # Add legend
-    plt.legend(bbox_to_anchor=(1.01, 1), 
-              loc='upper left', 
-              fontsize=12,
-              markerscale=2,
-              borderpad=1,
-              labelspacing=1)
+    # plt.legend(bbox_to_anchor=(1.01, 1), 
+    #           loc='upper left', 
+    #           fontsize=12,
+    #           markerscale=2,
+    #           borderpad=1,
+    #           labelspacing=1)
     
     
     # Adjust layout and save
@@ -164,11 +164,11 @@ def create_colored_grid(df, threshold=0.8):
                            alpha=0.7) 
                       for i, prop in enumerate(df.index)]
     
-    plt.legend(handles=legend_elements, 
-              bbox_to_anchor=(1.05, 1), 
-              fontsize=12,
-              borderpad=1,
-              loc='upper left')
+    # plt.legend(handles=legend_elements, 
+    #           bbox_to_anchor=(1.05, 1), 
+    #           fontsize=12,
+    #           borderpad=1,
+    #           loc='upper left')
     
     plt.tight_layout()
     plt.savefig(f'results/{MODEL}/colored_grid_edi_scores.png', 
