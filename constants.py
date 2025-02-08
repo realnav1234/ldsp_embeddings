@@ -1,1 +1,1 @@
-MODEL = "bert"
+MODEL = "gpt"

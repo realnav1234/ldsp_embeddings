@@ -1,0 +1,14 @@
+              precision    recall  f1-score   support
+
+definiteness       0.96      0.99      0.98       192
+  factuality       1.00      1.00      1.00       183
+ intensifier       0.99      0.99      0.99       203
+    negation       0.99      0.95      0.97       207
+    polarity       0.95      0.97      0.96       196
+    quantity       1.00      1.00      1.00       197
+       tense       1.00      1.00      1.00       222
+       voice       0.99      0.99      0.99       200
+
+    accuracy                           0.99      1600
+   macro avg       0.99      0.99      0.99      1600
+weighted avg       0.99      0.99      0.99      1600
