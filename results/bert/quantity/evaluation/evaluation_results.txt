@@ -1,5 +1,5 @@
 Baseline Accuracy: 1.0000
-Low EDI Score Dimensions Accuracy: 0.6233
+Low EDI Score Dimensions Accuracy: 0.6500
 
 Cross-Property Accuracies:
 intensifier: 0.6367

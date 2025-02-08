@@ -5,8 +5,8 @@ import os
 from utils import get_dataset_filepaths
 from tqdm import tqdm
 
-hf_model_name = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-model_name = "qwen"
+hf_model_name = "sentence-transformers/all-mpnet-base-v2"
+model_name = "mpnet"
 
 tokenizer = AutoTokenizer.from_pretrained(hf_model_name)
 model = AutoModel.from_pretrained(hf_model_name)
@@ -21,8 +21,6 @@ def get_embedding(text):
 if __name__ == "__main__":
 
     dataset_filepaths = get_dataset_filepaths()
-    
-
     for dataset_csv in tqdm(dataset_filepaths):
        
        df = pd.read_csv(dataset_csv)
@@ -31,6 +29,5 @@ if __name__ == "__main__":
        df['Sentence2_embedding'] = df['Sentence2'].apply(get_embedding)
        
        df.to_csv(os.path.join("embeddings", model_name, os.path.basename(dataset_csv).replace(".csv", f"_{model_name}_embeddings.csv")))
-
 
     print("Embedding Generation Complete")

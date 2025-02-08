@@ -22,9 +22,9 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=
     """
     # Define weights for different analyses
     WEIGHTS = {
-        'mutual_info': 0.33,
-        'wilcoxon': 0.33,
-        'rfe': 0.34
+        'mutual_info': 0.2,
+        'wilcoxon': 0.6,
+        'rfe': 0.2
     }
     assert abs(sum(WEIGHTS.values()) - 1.0) < 1e-10, "Weights must sum to 1"
 

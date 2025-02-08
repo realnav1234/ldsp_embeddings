@@ -1,5 +1,5 @@
 Baseline Accuracy: 1.0000
-Low EDI Score Dimensions Accuracy: 0.5400
+Low EDI Score Dimensions Accuracy: 0.5533
 
 Cross-Property Accuracies:
 tense: 0.7500

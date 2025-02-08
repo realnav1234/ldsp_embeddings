@@ -1,15 +1,15 @@
 Baseline Accuracy: 0.9933
-Low EDI Score Dimensions Accuracy: 0.4933
+Low EDI Score Dimensions Accuracy: 0.5000
 
 Cross-Property Accuracies:
-polarity_lds: 0.9133
-quantity_lds: 0.9900
-intensifier_lds: 0.9600
-voice_lds: 0.9767
-negation_lds: 0.9600
-factuality_lds: 0.9967
-control_lds: 0.5033
-definiteness_lds: 0.9000
+polarity: 0.9133
+quantity: 0.9900
+intensifier: 0.9600
+voice: 0.9767
+negation: 0.9600
+factuality: 0.9967
+control: 0.5033
+definiteness: 0.9000
 
 Incremental Results:
 Dimensions: 1, Test Accuracy: 0.6433

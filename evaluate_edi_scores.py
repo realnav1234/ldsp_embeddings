@@ -116,7 +116,7 @@ def evaluate_property(embeddings_csv, other_property_csvs):
         top_dims = top_dimensions[:n_dims_needed]
         
         for other_csv in other_property_csvs:
-            property_name = os.path.basename(other_csv)[:-21]
+            property_name = os.path.basename(other_csv)[:-25]
             
             if "synonym" in other_csv.lower():
                 continue
@@ -141,7 +141,7 @@ def evaluate_property(embeddings_csv, other_property_csvs):
             })
     
     # Get property name for plot title
-    current_property = os.path.basename(embeddings_csv)[:-21]
+    current_property = os.path.basename(embeddings_csv)[:-25]
     
     # Plot results with property name
     plot_results(results, eval_dir, current_property, best_cross_only=False)
@@ -157,11 +157,24 @@ def plot_results(results, eval_dir, property_name, best_cross_only=False):
     
     # Plot incremental results with darker line
     incremental_df = pd.DataFrame(results['incremental'])
-    plt.plot(incremental_df['n_dimensions'], 
-             incremental_df['test_accuracy'], 
-             label='High EDI Score Dimensions',
-             linewidth=2.5,
-             color='#1f77b4')  # Darker blue
+    if len(incremental_df) == 1:
+        # If only one dimension, plot a single point
+        plt.scatter(incremental_df['n_dimensions'], 
+                   incremental_df['test_accuracy'],
+                   color='#1f77b4',  # Darker blue
+                   s=100,  # Size of the point
+                   label='High EDI Score Dimensions',
+                   zorder=3)
+    else:
+        # Plot line for multiple dimensions
+        plt.plot(incremental_df['n_dimensions'], 
+                incremental_df['test_accuracy'], 
+                label='High EDI Score Dimensions',
+                linewidth=2.5,
+                color='#1f77b4')  # Darker blue
+    
+    # Force integer ticks on x-axis
+    plt.gca().xaxis.set_major_locator(plt.MaxNLocator(integer=True))
     
     # Plot baseline with darker line
     plt.axhline(y=results['baseline'], 

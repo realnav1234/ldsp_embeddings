@@ -27,7 +27,7 @@ Dimensions: 12, Test Accuracy: 0.9300
 Dimensions: 13, Test Accuracy: 0.9333
 Dimensions: 14, Test Accuracy: 0.9400
 Dimensions: 15, Test Accuracy: 0.9367
-Dimensions: 16, Test Accuracy: 0.9567
+Dimensions: 16, Test Accuracy: 0.9367
 Dimensions: 17, Test Accuracy: 0.9600
 Dimensions: 18, Test Accuracy: 0.9533
 Dimensions: 19, Test Accuracy: 0.9600
@@ -36,7 +36,7 @@ Dimensions: 21, Test Accuracy: 0.9600
 Dimensions: 22, Test Accuracy: 0.9633
 Dimensions: 23, Test Accuracy: 0.9633
 Dimensions: 24, Test Accuracy: 0.9600
-Dimensions: 25, Test Accuracy: 0.9667
+Dimensions: 25, Test Accuracy: 0.9600
 Dimensions: 26, Test Accuracy: 0.9633
 Dimensions: 27, Test Accuracy: 0.9633
 Dimensions: 28, Test Accuracy: 0.9600
