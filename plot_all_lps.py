@@ -154,9 +154,9 @@ def create_colored_grid(df, threshold=0.8):
                     alpha=alpha)
     
     # Customize the plot
-    plt.yticks(np.arange(0.5, len(df), 1), df.index)
-    plt.xlabel('Dimensions (0-767)')
-    plt.title(f'EDI Scores Above {threshold} for Each Linguistic Property')
+    plt.yticks(np.arange(0.5, len(df), 1), df.index,  fontsize=20)
+    plt.xlabel('Dimensions (0-767)',  fontsize=20)
+    plt.title(f'EDI Scores Above {threshold} for Each Linguistic Property', fontsize=20)
     
     # Create custom legend patches with count of dimensions
     legend_elements = [Patch(facecolor=colors[i], 
