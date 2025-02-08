@@ -82,7 +82,7 @@ def apply_multiple_testing_correction(results_df):
     return results_df
 
 
-def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory, test_type='t_test'):
+def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory, test_type='t_test', numplots=2):
     """
     Plot distributions for dimensions with most and least significant differences.
     
@@ -92,13 +92,13 @@ def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory, t
     # Get column names based on test type
     pval_col = 't_pvalue_bh' if test_type == 't_test' else 'wilcoxon_pvalue_bh'
     
-    # Get top-4 and bottom-4 dimensions based on p-values
-    top_4_dims = results_df.nsmallest(4, pval_col)['dimension'].values
-    bottom_4_dims = results_df.nlargest(4, pval_col)['dimension'].values
+    # Get top and bottom dimensions based on p-values
+    top_dims = results_df.nsmallest(numplots, pval_col)['dimension'].values
+    bottom_dims = results_df.nlargest(numplots, pval_col)['dimension'].values
 
-    # Plot top-4 dimensions
+    # Plot top dimensions
     plt.figure(figsize=(15, 10))
-    for i, dim in enumerate(top_4_dims):
+    for i, dim in enumerate(top_dims):
         plt.subplot(2, 2, i + 1)
         sentence1_values = [emb[dim] for emb in embeddings_df['Sentence1_embedding']]
         sentence2_values = [emb[dim] for emb in embeddings_df['Sentence2_embedding']]
@@ -109,12 +109,12 @@ def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory, t
         plt.title(f'Top {i+1}: Dimension {dim}')
         plt.legend(loc='upper right')
     plt.tight_layout()
-    plt.savefig(os.path.join(results_directory, f"top_4_p_values_{test_type}.png"))
+    plt.savefig(os.path.join(results_directory, f"top_{numplots}_p_values_{test_type}.png"))
     plt.close()
 
-    # Plot bottom-4 dimensions
-    plt.figure(figsize=(15, 10))
-    for i, dim in enumerate(bottom_4_dims):
+    # Plot bottom dimensions
+    plt.figure(figsize=(15, 5))
+    for i, dim in enumerate(bottom_dims):
         plt.subplot(2, 2, i + 1)
         sentence1_values = [emb[dim] for emb in embeddings_df['Sentence1_embedding']]
         sentence2_values = [emb[dim] for emb in embeddings_df['Sentence2_embedding']]
@@ -125,9 +125,39 @@ def plot_top_and_bottom_p_values(results_df, embeddings_df, results_directory, t
         plt.title(f'Bottom {i+1}: Dimension {dim}')
         plt.legend(loc='upper right')
     plt.tight_layout()
-    plt.savefig(os.path.join(results_directory, f"bottom_4_p_values_{test_type}.png"))
+    plt.savefig(os.path.join(results_directory, f"bottom_{numplots}_p_values_{test_type}.png"))
     plt.close()
 
+    # Plot top-1 and bottom-1 stacked
+    plt.figure(figsize=(12, 10))
+    
+    # Top-1 plot
+    top1_dim = top_dims[0]
+    plt.subplot(2, 1, 1)
+    sentence1_values = [emb[top1_dim] for emb in embeddings_df['Sentence1_embedding']]
+    sentence2_values = [emb[top1_dim] for emb in embeddings_df['Sentence2_embedding']]
+    plt.hist(sentence1_values, alpha=0.5, label='Sentence 1', bins=30)
+    plt.hist(sentence2_values, alpha=0.5, label='Sentence 2', bins=30)
+    plt.xlabel(f'Dimension {top1_dim}')
+    plt.ylabel('Frequency')
+    plt.title(f'Top-1: Dimension {top1_dim}')
+    plt.legend(loc='upper right')
+    
+    # Bottom-1 plot
+    bottom1_dim = bottom_dims[0]
+    plt.subplot(2, 1, 2)
+    sentence1_values = [emb[bottom1_dim] for emb in embeddings_df['Sentence1_embedding']]
+    sentence2_values = [emb[bottom1_dim] for emb in embeddings_df['Sentence2_embedding']]
+    plt.hist(sentence1_values, alpha=0.5, label='Sentence 1', bins=30)
+    plt.hist(sentence2_values, alpha=0.5, label='Sentence 2', bins=30)
+    plt.xlabel(f'Dimension {bottom1_dim}')
+    plt.ylabel('Frequency')
+    plt.title(f'Bottom-1: Dimension {bottom1_dim}')
+    plt.legend(loc='upper right')
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(results_directory, f"top1_bottom1_p_values_{test_type}.png"))
+    plt.close()
 
 def plot_difference_distributions(t_stats, p_vals, results_directory):
     """
@@ -193,6 +223,6 @@ if __name__ == "__main__":
         
         # Plot distributions for both test types
         # plot_top_and_bottom_p_values(t_test_df, embeddings_df, results_directory, test_type='t_test')
-        plot_top_and_bottom_p_values(wilcoxon_df, embeddings_df, results_directory, test_type='wilcoxon')
+        plot_top_and_bottom_p_values(wilcoxon_df, embeddings_df, results_directory, test_type='wilcoxon', numplots=4)
 
     print("\nT-test analysis complete.")

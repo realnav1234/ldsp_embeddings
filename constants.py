@@ -1,1 +1,1 @@
-MODEL = "mpnet"
+MODEL = "bert"
