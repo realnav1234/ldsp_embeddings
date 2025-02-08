@@ -29,7 +29,7 @@ def load_and_process_embeddings(embedding_filepaths):
     
     for filepath in embedding_filepaths:
         # Skip control and synonym properties
-        if 'control' in filepath.lower() or 'synonym' in filepath.lower():
+        if 'synonym' in filepath.lower():
             continue
             
         # Extract property name from filepath
@@ -192,9 +192,11 @@ def save_results(clf, X_test, y_test, y_pred, weights_by_property,
     
     # Save confusion matrix visualization
     plt.figure(figsize=(10, 8))
-    cm = confusion_matrix(y_test, y_pred, normalize='true')
-    sns.heatmap(cm, annot=True, fmt='.2f', xticklabels=property_names, 
-                yticklabels=property_names)
+    # Get unique labels in the correct order
+    unique_labels = np.unique(y_test)
+    cm = confusion_matrix(y_test, y_pred, normalize='true', labels=unique_labels)
+    sns.heatmap(cm, annot=True, fmt='.2f', xticklabels=unique_labels, 
+                yticklabels=unique_labels)
     plt.title('Normalized Confusion Matrix')
     plt.xlabel('Predicted')
     plt.ylabel('True')
