@@ -1,0 +1,120 @@
+
+Top dimensions for factuality:
+Dimension 55: -1.6074
+Dimension 747: 1.6337
+Dimension 419: 1.6739
+Dimension 730: 1.6800
+Dimension 597: 1.7852
+Dimension 738: -1.8737
+Dimension 40: -1.9354
+Dimension 389: 2.0126
+Dimension 162: 2.0944
+Dimension 395: -2.1882
+
+Top dimensions for intensifier:
+Dimension 695: 1.4224
+Dimension 309: 1.4515
+Dimension 647: 1.5271
+Dimension 709: 1.5799
+Dimension 481: -1.6035
+Dimension 272: -1.6132
+Dimension 532: 1.7650
+Dimension 378: 1.8705
+Dimension 236: 1.9006
+Dimension 382: -2.0235
+
+Top dimensions for definiteness:
+Dimension 260: -1.1914
+Dimension 694: 1.1923
+Dimension 325: 1.2403
+Dimension 410: -1.2745
+Dimension 651: 1.2802
+Dimension 524: -1.3026
+Dimension 187: -1.3259
+Dimension 210: 1.4407
+Dimension 554: -1.5530
+Dimension 532: -1.6856
+
+Top dimensions for quantity:
+Dimension 593: -1.3668
+Dimension 170: 1.3785
+Dimension 80: 1.3995
+Dimension 175: -1.4738
+Dimension 431: 1.5162
+Dimension 236: -1.5196
+Dimension 516: 1.5514
+Dimension 517: 1.8144
+Dimension 478: -2.1578
+Dimension 239: 2.1826
+
+Top dimensions for voice:
+Dimension 106: 1.2145
+Dimension 421: -1.2512
+Dimension 456: -1.3513
+Dimension 697: -1.3728
+Dimension 445: 1.3954
+Dimension 71: 1.4162
+Dimension 517: -1.5057
+Dimension 92: -1.5270
+Dimension 83: 1.5273
+Dimension 47: 1.8940
+
+Top dimensions for negation:
+Dimension 648: -1.0667
+Dimension 299: 1.0800
+Dimension 129: -1.0885
+Dimension 616: -1.0935
+Dimension 715: 1.1481
+Dimension 319: -1.1656
+Dimension 641: -1.1886
+Dimension 551: 1.3098
+Dimension 651: -1.4037
+Dimension 524: 1.4046
+
+Top dimensions for synonym:
+Dimension 299: -1.1676
+Dimension 75: 1.1777
+Dimension 591: 1.2178
+Dimension 260: 1.2301
+Dimension 684: 1.2638
+Dimension 345: -1.2639
+Dimension 553: -1.2947
+Dimension 706: -1.3662
+Dimension 726: -1.3802
+Dimension 129: 1.6195
+
+Top dimensions for tense:
+Dimension 251: 1.2216
+Dimension 305: -1.2278
+Dimension 466: 1.2386
+Dimension 73: 1.2498
+Dimension 181: -1.2771
+Dimension 401: 1.4124
+Dimension 456: 1.4423
+Dimension 256: 1.5144
+Dimension 13: 1.5196
+Dimension 741: 1.6872
+
+Top dimensions for polarity:
+Dimension 112: -1.1944
+Dimension 259: 1.1970
+Dimension 435: -1.2492
+Dimension 257: 1.2533
+Dimension 344: -1.2735
+Dimension 540: 1.3390
+Dimension 728: 1.3492
+Dimension 129: -1.3863
+Dimension 456: 1.4611
+Dimension 605: 1.6210
+
+Top dimensions for control:
+Dimension 525: 1.5651
+Dimension 442: 1.5826
+Dimension 748: -1.6202
+Dimension 276: -1.6464
+Dimension 730: -1.6570
+Dimension 629: -1.6611
+Dimension 752: 1.7317
+Dimension 364: 1.7590
+Dimension 683: 1.7782
+Dimension 381: 2.0692

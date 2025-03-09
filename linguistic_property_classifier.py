@@ -17,6 +17,8 @@ from sklearn.decomposition import PCA
 from scipy.stats import spearmanr
 import shap
 
+from constants import *
+
 def load_and_process_embeddings(embedding_filepaths):
     """
     Load embeddings from all properties and create difference vectors with labels
@@ -26,13 +28,9 @@ def load_and_process_embeddings(embedding_filepaths):
     property_names = []
     
     for filepath in embedding_filepaths:
-        # Skip control and synonym properties
-        if 'control' in filepath.lower() or 'synonym' in filepath.lower():
-            continue
-            
+
         # Extract property name from filepath
-        # print(proper:-21))
-        property_name = os.path.basename(filepath)[:-21]
+        property_name = os.path.basename(filepath)[:-CUT]
         property_names.append(property_name)
 
         # Load embeddings
@@ -190,9 +188,11 @@ def save_results(clf, X_test, y_test, y_pred, weights_by_property,
     
     # Save confusion matrix visualization
     plt.figure(figsize=(10, 8))
-    cm = confusion_matrix(y_test, y_pred, normalize='true')
-    sns.heatmap(cm, annot=True, fmt='.2f', xticklabels=property_names, 
-                yticklabels=property_names)
+    # Get unique labels in the correct order
+    unique_labels = np.unique(y_test)
+    cm = confusion_matrix(y_test, y_pred, normalize='true', labels=unique_labels)
+    sns.heatmap(cm, annot=True, fmt='.2f', xticklabels=unique_labels, 
+                yticklabels=unique_labels)
     plt.title('Normalized Confusion Matrix')
     plt.xlabel('Predicted')
     plt.ylabel('True')
@@ -387,10 +387,10 @@ def analyze_property_interactions(X, y, property_names, results_directory):
 
 def main():
     # Get embedding filepaths
-    embedding_filepaths = get_embeddings_filepaths()
+    embedding_filepaths = get_embeddings_filepaths(model_name=MODEL)
     
     # Create results directory
-    results_directory = os.path.join('results', 'linguistic_property_analysis')
+    results_directory = os.path.join('results', MODEL, 'linguistic_property_analysis')
     os.makedirs(results_directory, exist_ok=True)
     
     # Load and process data
@@ -402,18 +402,18 @@ def main():
     clf, X_test, y_test, y_pred, metrics = train_property_classifier(X, y)
     
     # Analyze weights
-    print("Analyzing classifier weights...")
+    # print("Analyzing classifier weights...")
     weights_by_property = analyze_classifier_weights(clf, property_names)
     
     # Perform dimension analysis
-    print("Analyzing dimensions...")
-    rf_importance, shap_values, correlations, pca = analyze_dimensions(
-        X, y, property_names, results_directory
-    )
+    # print("Analyzing dimensions...")
+    # rf_importance, shap_values, correlations, pca = analyze_dimensions(
+    #     X, y, property_names, results_directory
+    # )
     
     # Analyze property interactions
-    print("Analyzing property interactions...")
-    analyze_property_interactions(X, y, property_names, results_directory)
+    # print("Analyzing property interactions...")
+    # analyze_property_interactions(X, y, property_names, results_directory)
     
     # Save results
     print("Saving results...")

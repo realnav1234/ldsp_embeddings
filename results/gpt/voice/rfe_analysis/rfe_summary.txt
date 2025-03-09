@@ -1,0 +1,25 @@
+RFE Analysis Results
+Number of selected features: 20
+Model accuracy: 0.9900
+
+Selected features and their importance:
+1. Feature 73: Importance 1.8297
+2. Feature 79: Importance 1.5951
+3. Feature 80: Importance 1.2774
+4. Feature 102: Importance 3.2348
+5. Feature 189: Importance 1.6079
+6. Feature 191: Importance 2.3056
+7. Feature 263: Importance 1.6529
+8. Feature 319: Importance 1.3656
+9. Feature 362: Importance 1.4175
+10. Feature 487: Importance 1.6249
+11. Feature 500: Importance 2.0513
+12. Feature 592: Importance 1.2913
+13. Feature 614: Importance 1.6438
+14. Feature 642: Importance 1.8612
+15. Feature 674: Importance 2.1237
+16. Feature 691: Importance 1.6585
+17. Feature 715: Importance 1.5626
+18. Feature 721: Importance 5.4859
+19. Feature 728: Importance 1.9995
+20. Feature 738: Importance 1.2636

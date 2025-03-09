@@ -6,20 +6,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Patch
 
+from constants import MODEL
 
 def create_edi_comparison_table(embedding_dim):
     # Define the linguistic properties and their file paths
     properties = {
-        'Control': 'results/control/edi_scores/edi_score.csv',
-        'Negation': 'results/negation/edi_scores/edi_score.csv',
-        'Intensifier': 'results/intensifier/edi_scores/edi_score.csv',
-        'Tense': 'results/tense/edi_scores/edi_score.csv',
-        'Voice': 'results/voice/edi_scores/edi_score.csv',
-        'Polarity': 'results/polarity/edi_scores/edi_score.csv',
-        'Quantity': 'results/quantity/edi_scores/edi_score.csv',
-        'Factuality': 'results/factuality/edi_scores/edi_score.csv',
-        'Definiteness': 'results/definiteness/edi_scores/edi_score.csv',
-        'Synonym': 'results/synonym/edi_scores/edi_score.csv'
+        'Control': f'results/{MODEL}/control/edi_scores/edi_score.csv',
+        'Negation': f'results/{MODEL}/negation/edi_scores/edi_score.csv',
+        'Intensifier': f'results/{MODEL}/intensifier/edi_scores/edi_score.csv',
+        'Tense': f'results/{MODEL}/tense/edi_scores/edi_score.csv',
+        'Voice': f'results/{MODEL}/voice/edi_scores/edi_score.csv',
+        'Polarity': f'results/{MODEL}/polarity/edi_scores/edi_score.csv',
+        'Quantity': f'results/{MODEL}/quantity/edi_scores/edi_score.csv',
+        'Factuality': f'results/{MODEL}/factuality/edi_scores/edi_score.csv',
+        'Definiteness': f'results/{MODEL}/definiteness/edi_scores/edi_score.csv',
+        'Synonym': f'results/{MODEL}/synonym/edi_scores/edi_score.csv'
     }
     
     # Initialize an empty DataFrame to store all scores
@@ -38,7 +39,7 @@ def create_edi_comparison_table(embedding_dim):
     all_scores.columns = [f'Dim_{i}' for i in range(len(all_scores.columns))]
     
     # Save to CSV
-    output_path = 'results/combined_edi_scores.csv'
+    output_path = f'results/{MODEL}/combined_edi_scores.csv'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     all_scores.to_csv(output_path)
     
@@ -62,7 +63,7 @@ def create_highlighted_heatmap(df):
     plt.xlabel('Dimensions (0-767)')
     plt.tight_layout()
     
-    plt.savefig('results/edi_scores_heatmap.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'results/{MODEL}/edi_scores_heatmap.png', dpi=300, bbox_inches='tight')
     plt.close()
 
 
@@ -108,17 +109,17 @@ def create_colored_top_values(df, threshold=0.5):
     plt.title(f'EDI Scores Above {threshold} for Each Linguistic Property')
     
     # Add legend
-    plt.legend(bbox_to_anchor=(1.01, 1), 
-              loc='upper left', 
-              fontsize=12,
-              markerscale=2,
-              borderpad=1,
-              labelspacing=1)
+    # plt.legend(bbox_to_anchor=(1.01, 1), 
+    #           loc='upper left', 
+    #           fontsize=12,
+    #           markerscale=2,
+    #           borderpad=1,
+    #           labelspacing=1)
     
     
     # Adjust layout and save
     plt.tight_layout()
-    plt.savefig('results/colored_top_edi_scores.png', 
+    plt.savefig(f'results/{MODEL}/colored_top_edi_scores.png', 
                 dpi=300, bbox_inches='tight')
     plt.close()
     
@@ -153,9 +154,9 @@ def create_colored_grid(df, threshold=0.8):
                     alpha=alpha)
     
     # Customize the plot
-    plt.yticks(np.arange(0.5, len(df), 1), df.index)
-    plt.xlabel('Dimensions (0-767)')
-    plt.title(f'EDI Scores Above {threshold} for Each Linguistic Property')
+    plt.yticks(np.arange(0.5, len(df), 1), df.index,  fontsize=20)
+    plt.xlabel('Dimensions (0-767)',  fontsize=20)
+    plt.title(f'EDI Scores Above {threshold} for Each Linguistic Property', fontsize=20)
     
     # Create custom legend patches with count of dimensions
     legend_elements = [Patch(facecolor=colors[i], 
@@ -163,14 +164,14 @@ def create_colored_grid(df, threshold=0.8):
                            alpha=0.7) 
                       for i, prop in enumerate(df.index)]
     
-    plt.legend(handles=legend_elements, 
-              bbox_to_anchor=(1.05, 1), 
-              fontsize=12,
-              borderpad=1,
-              loc='upper left')
+    # plt.legend(handles=legend_elements, 
+    #           bbox_to_anchor=(1.05, 1), 
+    #           fontsize=12,
+    #           borderpad=1,
+    #           loc='upper left')
     
     plt.tight_layout()
-    plt.savefig('results/colored_grid_edi_scores.png', 
+    plt.savefig(f'results/{MODEL}/colored_grid_edi_scores.png', 
                 dpi=300, 
                 bbox_inches='tight')
     plt.close()
@@ -185,10 +186,11 @@ if __name__ == "__main__":
 
     # Generate visualizations
     create_highlighted_heatmap(df)
-    print("Created heatmap at 'results/edi_scores_heatmap.png'")
+    print(f"Created heatmap at 'results/{MODEL}/edi_scores_heatmap.png'")
 
     create_colored_grid(df, threshold=0.8)
-    print("Created visualization at 'results/colored_grid_edi_scores.png'")
+    print(f"Created visualization at 'results/{MODEL}/colored_grid_edi_scores.png'")
+
 
 
 
