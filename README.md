@@ -11,12 +11,23 @@ This repository contains the code and resources associated with the paper *Disen
 ## Repository Structure
 ```
 ├── datasets/             # Contains the LDSP-10 dataset
-├── embeddings/           # The generated embeddings for each linguistic property and language model.
-├── evaluation scripts /  # Core scripts used for statistical analysis
-│   ├── dataset.py        # Code for dataset preprocessing
-│   ├── analysis.py       # Scripts for statistical analysis
-│   ├── visualization.py  # Tools for plotting and result visualization
+├── embeddings/                   # The generated embeddings for each linguistic property and language model.
+├── src/
+    ├── utils.py                               # Utility functions
+    ├── constants.py                           # Constants used throughout the project
+    ├── dataset/
+        ├── generate_embeddings.py
+        └── create_control_group.py
+    ├── evaluations/                           # Core scripts used for statistical analysis
+        ├── linguistic_property_classifier.py  # Classifier for linguistic properties
+        └── evaluate_edi_scores.py  # Evaluation of EDI scores
+    ├── methods/              # Contains various methods for analysis
+        ├── mutual_information.py  # Mutual information calculations
+        ├── recursive_feature_elimination.py  # RFE implementation
+        ├── wilcoxon.py       # Wilcoxon test implementation
+        ├── edi_score.py 
+        ├── plot_all_lps.py 
+        └──generate_combined_scores.py 
 ├── results/              # Stores experimental results and figures
-├── README.md             # Project documentation
-├── run.sh                # Used to generate EDI scores for one of the built-in models.
-```
+└── run.sh                # Used to generate EDI scores for one of the built-in models.
+
