@@ -29,6 +29,7 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=
     mi_scores = np.zeros(n_dims)
     wilcoxon_scores = np.zeros(n_dims)
     rfe_scores = np.zeros(n_dims)
+
     # Calculate Mutual Information scores
     mi_values = mutual_info_df["Mutual_Information"].values
     mi_scores = (mi_values - mi_values.min()) / (mi_values.max() - mi_values.min())
@@ -46,6 +47,7 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=
     rfe_dimensions = rfe_results_df["Feature"].values
     rfe_importance = rfe_results_df["Importance"].values
     rfe_scores[rfe_dimensions] = rfe_importance
+
     # Normalize RFE scores
     if rfe_scores.max() != rfe_scores.min():
         rfe_scores = (rfe_scores - rfe_scores.min()) / (
@@ -59,7 +61,7 @@ def calculate_edi_scores(mutual_info_df, wilcoxon_results_df, rfe_results_df, N=
         + WEIGHTS["rfe"] * rfe_scores
     )
 
-    # Create and sort DataFrame
+    # Create and sort dataframe
     scores_df = pd.DataFrame(
         {
             "dimension": range(n_dims),
@@ -91,7 +93,6 @@ if __name__ == "__main__":
             embeddings_csv, "edi_scores", model_name=MODEL
         )
 
-        # Load analysis results
         mutual_info_df = pd.read_csv(
             os.path.join(
                 get_results_directory(
@@ -117,7 +118,6 @@ if __name__ == "__main__":
             )
         )
 
-        # Calculate and save EDI scores
         edi_scores = calculate_edi_scores(
             mutual_info_df, wilcoxon_results_df, rfe_results_df
         )

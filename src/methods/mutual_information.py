@@ -15,7 +15,7 @@ def calculate_mutual_information(embeddings, labels):
 
     for dim in range(n_dimensions):
         embedding_dim = embeddings[:, dim]
-        bins = np.quantile(embedding_dim, np.linspace(0, 1, 10))  # 10 bins
+        bins = np.quantile(embedding_dim, np.linspace(0, 1, 10))  
         discretized_embedding = np.digitize(embedding_dim, bins)
         mutual_informations[dim] = mutual_info_score(labels, discretized_embedding)
 
@@ -37,13 +37,11 @@ def process_mutual_information(embeddings_df):
 
     all_embeddings = all_embeddings.reshape(len(all_embeddings), -1)
 
-    # Calculate mutual information
     mutual_informations = calculate_mutual_information(all_embeddings, all_labels)
 
-    # Find the most important dimensions
     most_important_dimensions = np.argsort(mutual_informations)[
         ::-1
-    ]  # Descending order
+    ]
     top_10_dimensions = most_important_dimensions[:10]
     top_10_mutual_informations = mutual_informations[top_10_dimensions]
 
@@ -56,7 +54,6 @@ def save_results(
     top_10_mutual_informations,
     results_directory,
 ):
-    # Save all mutual information to a CSV
     csv_filepath = os.path.join(results_directory, "mutual_information_all.csv")
     df = pd.DataFrame(
         {

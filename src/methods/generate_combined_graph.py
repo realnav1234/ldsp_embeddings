@@ -29,10 +29,9 @@ def create_combined_graph(
     plt.figure(figsize=(12, 6))
 
     # Create bar colors array - default darker gray for most bars
-    bar_colors = ["#BDBDBD"] * len(mutual_informations)  # Darker gray
-    # Set blue color for top Wilcoxon dimensions
+    bar_colors = ["#BDBDBD"] * len(mutual_informations) 
     for dim in top_N_wilcoxon:
-        bar_colors[dim] = "#1565C0"  # Darker blue
+        bar_colors[dim] = "#1565C0"  # dark blue for top dimensions
 
     # Plot mutual information bars with colors
     plt.bar(
@@ -43,14 +42,13 @@ def create_combined_graph(
         alpha=0.8,
     )
 
-    # Add a blue bar to legend for Wilcoxon
     plt.bar([-1], [0], color="#1565C0", alpha=0.8, label=f"Top {N} (Wilcoxon)")
 
     # Add threshold line for top N mutual information values
     threshold = np.sort(mutual_informations)[-N]
     plt.axhline(
         y=threshold, color="#AD6ED1", linestyle="--", label=f"Top {N} MI Threshold"
-    )  # Green
+    ) 
 
     # Plot RFE dimensions
     plt.scatter(
@@ -61,7 +59,7 @@ def create_combined_graph(
         label=f"Top {N} (RFE)",
         s=50,
         alpha=0.8,
-    )  # Bright green
+    ) 
 
     # Find dimensions that are in all three categories
     triple_overlap = set(top_N_wilcoxon) & set(rfe_dimensions) & set(top_N_mi)
@@ -100,7 +98,6 @@ if __name__ == "__main__":
             embeddings_csv, "combined_analysis", model_name=MODEL
         )
 
-        # Load all the analysis results
         mutual_info_df = pd.read_csv(
             os.path.join(
                 get_results_directory(

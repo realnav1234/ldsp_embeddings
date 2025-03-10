@@ -53,8 +53,6 @@ def create_highlighted_heatmap(df):
     # Create mask for missing values
     mask = df.isna()
 
-    # sns.set_context("notebook", font_scale=2)
-
     plt.rcParams.update({"font.size": 22})
 
     # Create the base heatmap
@@ -76,10 +74,8 @@ def create_highlighted_heatmap(df):
 
 
 def create_colored_top_values(df, threshold=0.5):
-    # Create a figure with a larger size
     plt.figure(figsize=(20, 14))
 
-    # Define distinct colors for each property
     colors = [
         "#FF5252",  # Red
         "#FF7B52",  # Red-Orange
@@ -94,20 +90,16 @@ def create_colored_top_values(df, threshold=0.5):
         "#D81B60",  # Pink-Violet
     ]
 
-    # Create the base white plot
     plt.imshow(np.zeros_like(df), cmap="binary", aspect="auto")
 
     # For each row (property), highlight values above threshold
     for idx, (property_name, row) in enumerate(df.iterrows()):
-        # Get indices and values above threshold
         high_value_idx = row[row > threshold].index
         high_values = row[row > threshold]
 
-        # Convert string indices to integers
         x_positions = [int(col.split("_")[1]) for col in high_value_idx]
         y_positions = [idx] * len(x_positions)
 
-        # Plot colored dots for high values
         plt.scatter(
             x_positions,
             y_positions,
@@ -121,15 +113,6 @@ def create_colored_top_values(df, threshold=0.5):
     plt.xlabel("Dimensions (0-767)")
     plt.title(f"EDI Scores Above {threshold} for Each Linguistic Property")
 
-    # Add legend
-    # plt.legend(bbox_to_anchor=(1.01, 1),
-    #           loc='upper left',
-    #           fontsize=12,
-    #           markerscale=2,
-    #           borderpad=1,
-    #           labelspacing=1)
-
-    # Adjust layout and save
     plt.tight_layout()
     plt.savefig(
         f"results/{MODEL}/colored_top_edi_scores.png", dpi=300, bbox_inches="tight"
@@ -140,10 +123,8 @@ def create_colored_top_values(df, threshold=0.5):
 def create_colored_grid(df, threshold=0.8):
     plt.figure(figsize=(20, 12))
 
-    # Define distinct colors for each property
     colors = sns.color_palette("husl", n_colors=len(df))
 
-    # Create a white background
     plt.pcolor(
         np.zeros((len(df), len(df.columns))),
         cmap="binary",
@@ -153,16 +134,13 @@ def create_colored_grid(df, threshold=0.8):
 
     # For each row (property), highlight values above threshold
     for idx, (property_name, row) in enumerate(df.iterrows()):
-        # Get indices where values exceed threshold
         high_value_idx = row[row > threshold].index
         high_values = row[row > threshold]
 
-        # Convert string indices to integers
         x_positions = [int(col.split("_")[1]) for col in high_value_idx]
 
-        # Plot colored cells for high values
         for x, value in zip(x_positions, high_values):
-            alpha = min(1.0, value / threshold)  # Scale opacity by score
+            alpha = min(1.0, value / threshold) 
             plt.fill(
                 [x, x + 1, x + 1, x],
                 [idx, idx, idx + 1, idx + 1],
@@ -170,26 +148,9 @@ def create_colored_grid(df, threshold=0.8):
                 alpha=alpha,
             )
 
-    # Customize the plot
     plt.yticks(np.arange(0.5, len(df), 1), df.index, fontsize=20)
     plt.xlabel("Dimensions (0-767)", fontsize=20)
     plt.title(f"EDI Scores Above {threshold} for Each Linguistic Property", fontsize=20)
-
-    # Create custom legend patches with count of dimensions
-    legend_elements = [
-        Patch(
-            facecolor=colors[i],
-            label=f"{prop} ({len(df.iloc[i][df.iloc[i] > threshold])} dims)",
-            alpha=0.7,
-        )
-        for i, prop in enumerate(df.index)
-    ]
-
-    # plt.legend(handles=legend_elements,
-    #           bbox_to_anchor=(1.05, 1),
-    #           fontsize=12,
-    #           borderpad=1,
-    #           loc='upper left')
 
     plt.tight_layout()
     plt.savefig(
@@ -199,21 +160,13 @@ def create_colored_grid(df, threshold=0.8):
 
 
 if __name__ == "__main__":
-    # Create the comparison table
     df = create_edi_comparison_table(768)
     print(f"Created table with shape: {df.shape}")
     print("\nFirst few columns of the table:")
     print(df.iloc[:, :5])
 
-    # Generate visualizations
     create_highlighted_heatmap(df)
     print(f"Created heatmap at 'results/{MODEL}/edi_scores_heatmap.png'")
 
     create_colored_grid(df, threshold=0.8)
     print(f"Created visualization at 'results/{MODEL}/colored_grid_edi_scores.png'")
-
-
-# if __name__ == "__main__":
-#     embedding_filepaths = get_embeddings_filepaths()
-#     for embeddings_csv in embedding_filepaths:
-#         edi_df = pd.read_csv(os.path.join(get_results_directory(embeddings_csv, "edi_scores"), "edi_score.csv"))
